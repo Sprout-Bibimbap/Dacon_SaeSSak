@@ -12,8 +12,8 @@
     "seed": 917,
     "epochs": 3,
     "learning_rate": 0.001,
-    "criterion": "MSE",
-    "optimizer": "Adam",
+    "criterion": "rmse",
+    "optimizer": "adam",
     "batch_size": 4,
     "save_interval": 5
 }

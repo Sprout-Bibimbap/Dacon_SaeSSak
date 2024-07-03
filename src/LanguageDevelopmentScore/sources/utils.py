@@ -29,16 +29,6 @@ def get_model_tokenizer(args):
     return model.to(args.device), tokenizer
 
 
-def get_criterion(config):
-    crt = config["criterion"].lower().strip()
-    if crt == "mse":
-        return nn.MSELoss()
-    elif crt == "mae":
-        return nn.L1Loss()
-    else:
-        raise ValueError(f"Unknown criterion: {config['criterion']}")
-
-
 def get_optimizer(config, model):
     if config["optimizer"].lower() == "adam":
         return Adam(model.parameters(), lr=config["learning_rate"])
@@ -46,3 +36,24 @@ def get_optimizer(config, model):
         return torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
     else:
         raise ValueError(f"Unknown optimizer: {config['optimizer']}")
+
+
+def get_criterion(config):
+    crt = config["criterion"].lower().strip()
+    if crt == "mse":
+        return nn.MSELoss()
+    elif crt == "mae":
+        return nn.L1Loss()
+    elif crt == "rmse":
+        return RMSELoss()
+    else:
+        raise ValueError(f"Unknown criterion: {config['criterion']}")
+
+
+class RMSELoss(nn.Module):
+    def __init__(self):
+        super(RMSELoss, self).__init__()
+        self.mse = nn.MSELoss()
+
+    def forward(self, y_pred, y_true):
+        return torch.sqrt(self.mse(y_pred, y_true))
