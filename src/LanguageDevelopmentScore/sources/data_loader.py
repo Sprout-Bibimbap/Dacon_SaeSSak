@@ -57,7 +57,7 @@ def get_loader(config, tokenizer):
     train_idx, valid_idx = train_test_split(
         range(len(dataset)),
         test_size=config["valid_size"],
-        # stratify=y_stratify,
+        stratify=y_stratify,
         random_state=config["seed"],
     )
 
@@ -82,4 +82,4 @@ def get_loader(config, tokenizer):
 
 def data_preprocessing(data):
     """필요하다면 구현"""
-    return data[:100]
+    return data
