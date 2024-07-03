@@ -25,3 +25,6 @@ test*
 exclude/
 .venv
 .vscode
+*.pth
+*.pt
+*.pyc
