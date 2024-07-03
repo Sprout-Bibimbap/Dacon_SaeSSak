@@ -7,7 +7,7 @@ client = OpenAI()
 router = APIRouter()
 
 
-@router.post("/stt")
+@router.post("/transcribe")
 async def stt_audio(request: Request, file: UploadFile = File(...)):
     openai_client = request.app.state.openai_client
     if not file.filename:
