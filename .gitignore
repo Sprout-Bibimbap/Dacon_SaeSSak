@@ -25,3 +25,10 @@ test*
 exclude/
 .venv
 .vscode
+
+# Ignore __pycache__ directories
+__pycache__/
+**/__pycache__/
+
+# Ignore .pyc files
+*.pyc
