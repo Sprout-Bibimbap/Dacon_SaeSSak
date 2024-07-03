@@ -7,7 +7,29 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+.visualizer-container {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.recording-indicator {
+  margin: 20px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.recording-indicator.active {
+  color: #ff4136;
+}
+
+button {
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
