@@ -28,3 +28,4 @@ exclude/
 *.pth
 *.pt
 *.pyc
+wandb/

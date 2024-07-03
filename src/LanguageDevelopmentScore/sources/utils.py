@@ -5,11 +5,20 @@ from sources.models import sBERTRegressor
 import torch.nn as nn
 import torch
 from torch.optim import Adam
+import re
+
+
+def model_identification(args):
+    model_name = args.config["model"]
+    cleaned_model_name = re.sub(r"\W+", "", model_name).lower()
+    if cleaned_model_name == "sbert":
+        return "sBERT"
+    else:
+        raise ValueError(f"Unknown model: {model_name}")
 
 
 def get_model_tokenizer(args):
-    model_name = args.config["model"]
-    if model_name.lower() == "sbert":
+    if args.model == "sBERT":
         model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = sBERTRegressor(model_name, args.config["is_freeze"])
@@ -31,9 +40,9 @@ def get_criterion(config):
 
 
 def get_optimizer(config, model):
-    if config["optimizer"] == "Adam":
+    if config["optimizer"].lower() == "adam":
         return Adam(model.parameters(), lr=config["learning_rate"])
-    elif config["optimizer"] == "SGD":
+    elif config["optimizer"].lower() == "sgd":
         return torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
     else:
         raise ValueError(f"Unknown optimizer: {config['optimizer']}")

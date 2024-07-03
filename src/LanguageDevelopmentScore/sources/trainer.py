@@ -2,6 +2,7 @@ import os
 import torch
 from tqdm import tqdm
 from sources.utils import get_criterion, get_optimizer
+import wandb
 
 
 class Trainer:
@@ -41,6 +42,13 @@ class Trainer:
 
             print(
                 f"Epoch [{epoch+1}/{self.epochs}], Train Loss: {running_loss/len(self.train_loader):.4f}, Valid Loss: {validation_loss:.4f}"
+            )
+            wandb.log(
+                {
+                    "Train loss": running_loss / len(self.train_loader),
+                    "Valid Loss": validation_loss,
+                },
+                step=epoch,
             )
             if validation_loss < self.best_loss:
                 print("**Best Model**")
