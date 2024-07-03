@@ -10,10 +10,10 @@
     "valid_size":0.2,
     "is_freeze": false,
     "seed": 917,
-    "epochs": 3,
+    "epochs": 20,
     "learning_rate": 0.001,
     "criterion": "rmse",
     "optimizer": "adam",
-    "batch_size": 4,
+    "batch_size": 64,
     "save_interval": 5
 }
