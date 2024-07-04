@@ -9,7 +9,7 @@ class OpenAIClient:
     @classmethod
     async def get_instance(cls):
         if cls._instance is None:
-            cls._instance = await cls.create_instance()
+            cls._instance = await cls._create_instance()
         return cls._instance
 
     @classmethod
