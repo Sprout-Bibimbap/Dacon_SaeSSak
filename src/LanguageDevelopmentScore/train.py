@@ -32,8 +32,8 @@ if __name__ == "__main__":
     with open(args.config, "r", encoding="utf-8") as f:
         args.config = json.load(f)
     korea_timezone = pytz.timezone("Asia/Seoul")
-    korea_time = datetime.now(korea_timezone).strftime("%Y-%m-%d %H:%M:%S")
+    args.time = datetime.now(korea_timezone).strftime("%Y-%m-%d_%H-%M-%S")
     args.model = model_identification(args)
     wandb.login(key=os.getenv("WANDB_API_KEY"))
-    wandb.init(project="SaeSSac-Score", name=f"{args.model}_{korea_time}")
+    wandb.init(project="SaeSSac-Score", name=f"{args.model}_{args.time}")
     main(args)
