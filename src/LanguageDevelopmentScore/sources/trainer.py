@@ -10,6 +10,7 @@ class Trainer:
         self.model = model
         self.device = args.device
         self.model_name = args.model
+        self.model_ver = args.version
         self.start_time = args.time
 
         self.criterion = get_criterion(args.config)
@@ -76,7 +77,7 @@ class Trainer:
         checkpoint_dir = os.path.join(base_dir, "..", "checkpoints")
         os.makedirs(checkpoint_dir, exist_ok=True)
         checkpoint_path = os.path.join(
-            checkpoint_dir, f"{self.model_name}_{self.start_time}.pth"
+            checkpoint_dir, f"{self.model_name}{self.model_ver}_{self.start_time}.pth"
         )
         torch.save(self.model.state_dict(), checkpoint_path)
         print(f"Model checkpoint saved at epoch {epoch} to {checkpoint_path}")

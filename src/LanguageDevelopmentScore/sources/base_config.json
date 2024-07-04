@@ -1,5 +1,5 @@
 {
-    "model": "sBERTNew",
+    "model": "sBERTNewV2",
     "data": {
         "repo_id": "SaeSSak/Conversation",
         "file_name": "PreprocessedDataV2.parquet",

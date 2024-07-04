@@ -34,10 +34,12 @@ if __name__ == "__main__":
     args.time = datetime.now(korea_timezone).strftime("%Y-%m-%d_%H-%M-%S")
     load_dotenv(args.config["env_path"])
     seed_everything(args.config["seed"])
-    args.model = model_identification(args)
+    args.model, args.version = model_identification(args)
     wandb.login(key=os.getenv("WANDB_API_KEY"))
     wandb.init(
-        project="SaeSSac-Score", name=f"{args.model}_{args.time}", config=args.config
+        project="SaeSSac-Score",
+        name=f"{args.model}{args.version}_{args.time}",
+        config=args.config,
     )
     start_message(args)
     main(args)

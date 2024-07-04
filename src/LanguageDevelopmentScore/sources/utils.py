@@ -26,9 +26,13 @@ def model_identification(args):
     model_name = args.config["model"]
     cleaned_model_name = re.sub(r"\W+", "", model_name).lower()
     if cleaned_model_name == "sbert":
-        return "sBERT"
+        return "sBERT", ""
     elif cleaned_model_name == "sbertnew":
-        return "sBERTNew"
+        return "sBERTNew", ""
+    elif cleaned_model_name == "sbertnewv2":
+        return "sBERTNew", "V2"
+    elif cleaned_model_name == "robertabase":
+        return "sBERTNew", ""
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -41,7 +45,9 @@ def get_model_tokenizer(args):
     elif args.model == "sBERTNew":
         model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = sBERTRegressorNew(model_name, args.config["is_freeze"], version=2)
+        model = sBERTRegressorNew(
+            model_name, args.config["is_freeze"], version=args.version
+        )
     else:
         raise ValueError(
             f"Unknown model: {args.config['model']}\tPossible Option: [sbert]"
@@ -81,13 +87,14 @@ class RMSELoss(nn.Module):
 
 def start_message(args):
     device_str = str(args.device)
+    version = ":" + args.version if args.version else args.version
     print(
         f"──────────────────────── TRAINING SETTINGS ───────────────────────\n"
         f" DEVICE: {device_str}   \n"
         f" SEED: {args.config['seed']}\n"
         f" CONFIG FILE: {args.config_path}\n"
         f" ENVIRONMENT PATH: {args.config['env_path']}\n"
-        f" MODEL NAME: {args.model}\n"
+        f" MODEL NAME: {args.model}{version}\n"
         f" TIMESTAMP: {args.time}\n"
         f"──────────────────────────────────────────────────────────────────"
     )
