@@ -2,8 +2,8 @@ import io
 from openai import OpenAI
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File
+from pathlib import Path
 
-client = OpenAI()
 router = APIRouter()
 
 
@@ -31,8 +31,17 @@ async def stt_audio(request: Request, file: UploadFile = File(...)):
 
         # 파일을 BytesIO로 변환
         file_data = await file.read()
+
+        # root_dir = Path(__file__).resolve().parents[4]
+        # local_file_path = root_dir / "data" / "test_sound.wav"
+        # with open(local_file_path, "rb") as audio:
+        #     file_data = audio.read()
+
         audio_bytes = io.BytesIO(file_data)
         audio_bytes.name = file.filename
+
+        # 파일 포인터를 처음으로 이동
+        audio_bytes.seek(0)
 
         # OpenAI API로 파일 전송
         transcription = openai_client.audio.transcriptions.create(

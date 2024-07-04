@@ -15,10 +15,10 @@ from config.utils import config
 async def app_lifespan(app: FastAPI):
     try:
         print("Lifespan start!")
-        app.state.mongo_client = await MongoDBClient.get_instance()
-        print("MongoDB done!")
-        await MongoLogger.initialize()
-        print("Logger done!")
+        # app.state.mongo_client = await MongoDBClient.get_instance()
+        # print("MongoDB done!")
+        # await MongoLogger.initialize()
+        # print("Logger done!")
         app.state.openai_client = OpenAI(api_key=config["API"]["OPENAI_API_KEY"])
         print("OpenAI client done")
         print("All Set!")
@@ -51,5 +51,4 @@ app.include_router(stt.router, prefix="/api/v1/stt")
 
 
 if __name__ == "__main__":
-    workers = os.cpu_count()
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, workers=workers)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
