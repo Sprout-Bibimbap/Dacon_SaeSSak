@@ -6,6 +6,21 @@ import torch.nn as nn
 import torch
 from torch.optim import Adam
 import re
+import random
+import numpy as np
+
+
+def seed_everything(seed):
+    random.seed(seed)  # Python 내장 random 모듈
+    np.random.seed(seed)  # Numpy 모듈
+    os.environ["PYTHONHASHSEED"] = str(seed)  # 환경 변수
+    torch.manual_seed(seed)  # CPU를 위한 시드 고정
+    torch.cuda.manual_seed(seed)  # GPU를 위한 시드 고정
+    torch.cuda.manual_seed_all(seed)  # 멀티 GPU를 위한 시드 고정
+    torch.backends.cudnn.deterministic = True  # CUDNN 옵티마이저 고정
+    torch.backends.cudnn.benchmark = False  # 벤치마크 모드 비활성화
+    torch.backends.cudnn.enabled = False  # cudnn 비활성화
+    print(f"SET SEED: {seed}")
 
 
 def model_identification(args):

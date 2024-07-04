@@ -29,6 +29,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.device = torch.device("cuda:0") if torch.cuda.is_available() else "cpu"
     load_dotenv()
+    seed_everything(args.seed)
     with open(args.config, "r", encoding="utf-8") as f:
         args.config = json.load(f)
     korea_timezone = pytz.timezone("Asia/Seoul")
