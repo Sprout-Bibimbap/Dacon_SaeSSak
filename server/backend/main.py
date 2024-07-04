@@ -7,8 +7,8 @@ import uvicorn
 from middlewares.time import StartTimeMiddleware
 from database.mongodb import MongoDBClient
 from exceptions.loggers import MongoLogger
+from model.openai import OpenAIClient
 from routers import stt
-from config.utils import config
 
 
 @asynccontextmanager
@@ -19,7 +19,7 @@ async def app_lifespan(app: FastAPI):
         # print("MongoDB done!")
         # await MongoLogger.initialize()
         # print("Logger done!")
-        app.state.openai_client = OpenAI(api_key=config["API"]["OPENAI_API_KEY"])
+        app.state.openai_client = await OpenAIClient.get_instance()
         print("OpenAI client done")
         print("All Set!")
 
