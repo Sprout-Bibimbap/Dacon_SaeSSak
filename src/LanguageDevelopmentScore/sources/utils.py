@@ -1,7 +1,7 @@
 import json
 import os
-from transformers import AutoTokenizer, AutoModel
-from sources.models import sBERTRegressor
+from transformers import AutoTokenizer
+from sources.models import sBERTRegressor, sBERTRegressorNew
 import torch.nn as nn
 import torch
 from torch.optim import Adam
@@ -13,6 +13,8 @@ def model_identification(args):
     cleaned_model_name = re.sub(r"\W+", "", model_name).lower()
     if cleaned_model_name == "sbert":
         return "sBERT"
+    elif cleaned_model_name == "sbertnew":
+        return "sBERTNew"
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -22,6 +24,10 @@ def get_model_tokenizer(args):
         model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = sBERTRegressor(model_name, args.config["is_freeze"])
+    elif args.model == "sBERTNew":
+        model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = sBERTRegressorNew(model_name, args.config["is_freeze"])
     else:
         raise ValueError(
             f"Unknown model: {args.config['model']}\tPossible Option: [sbert]"
