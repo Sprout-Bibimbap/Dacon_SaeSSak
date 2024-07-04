@@ -21,7 +21,7 @@ class sBERTRegressor(nn.Module):
 
 class sBERTRegressorNew(nn.Module):
     def __init__(self, model_name, is_freeze) -> None:
-        super(sBERTRegressor, self).__init__()
+        super(sBERTRegressorNew, self).__init__()
         self.sbert = AutoModel.from_pretrained(model_name)
         self.fc1 = nn.Linear(self.sbert.config.hidden_size, 256)
         self.fc2 = nn.Linear(256, 64)
