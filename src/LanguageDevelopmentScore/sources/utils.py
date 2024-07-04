@@ -20,7 +20,6 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True  # CUDNN 옵티마이저 고정
     torch.backends.cudnn.benchmark = False  # 벤치마크 모드 비활성화
     torch.backends.cudnn.enabled = False  # cudnn 비활성화
-    print(f"SET SEED: {seed}")
 
 
 def model_identification(args):
@@ -78,3 +77,17 @@ class RMSELoss(nn.Module):
 
     def forward(self, y_pred, y_true):
         return torch.sqrt(self.mse(y_pred, y_true))
+
+
+def start_message(args):
+    device_str = str(args.device)
+    print(
+        f"──────────────────────── TRAINING SETTINGS ───────────────────────\n"
+        f" DEVICE: {device_str}   \n"
+        f" SEED: {args.config['seed']}\n"
+        f" CONFIG FILE: {args.config_path}\n"
+        f" ENVIRONMENT PATH: {args.config['env_path']}\n"
+        f" MODEL NAME: {args.model}\n"
+        f" TIMESTAMP: {args.time}\n"
+        f"──────────────────────────────────────────────────────────────────"
+    )

@@ -21,20 +21,21 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Language Development Score")
     parser.add_argument(
-        "--config",
+        "--config_path",
         type=str,
         default="./sources/base_config.json",
         help="Path to the training configuration file",
     )
     args = parser.parse_args()
     args.device = torch.device("cuda:0") if torch.cuda.is_available() else "cpu"
-    load_dotenv()
-    seed_everything(args.seed)
-    with open(args.config, "r", encoding="utf-8") as f:
+    with open(args.config_path, "r", encoding="utf-8") as f:
         args.config = json.load(f)
     korea_timezone = pytz.timezone("Asia/Seoul")
     args.time = datetime.now(korea_timezone).strftime("%Y-%m-%d_%H-%M-%S")
+    load_dotenv(args.config["env_path"])
+    seed_everything(args.config["seed"])
     args.model = model_identification(args)
     wandb.login(key=os.getenv("WANDB_API_KEY"))
     wandb.init(project="SaeSSac-Score", name=f"{args.model}_{args.time}")
+    start_message(args)
     main(args)

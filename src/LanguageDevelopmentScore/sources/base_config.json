@@ -1,16 +1,17 @@
 {
-    "model": "sBERT",
+    "model": "sBERTNew",
     "data": {
         "repo_id": "SaeSSak/Conversation",
         "file_name": "PreprocessedData.parquet",
         "input": ["음성인식결과"],
         "output": ["나이"]
     },
+    "env_path": "./.env",
     "max_length": 128,
     "valid_size":0.2,
     "is_freeze": false,
     "seed": 917,
-    "epochs": 20,
+    "epochs": 10,
     "learning_rate": 0.001,
     "criterion": "rmse",
     "optimizer": "adam",
