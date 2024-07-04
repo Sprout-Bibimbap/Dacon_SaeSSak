@@ -43,13 +43,27 @@ async def stt_audio(request: Request, file: UploadFile = File(...)):
         # 파일 포인터를 처음으로 이동
         audio_bytes.seek(0)
 
-        # OpenAI API로 파일 전송
+        # STT
         transcription = openai_client.audio.transcriptions.create(
             model="whisper-1",
             file=audio_bytes,
             response_format="text",
         )
-        return JSONResponse(content={"transcription": transcription}, status_code=200)
+        
+        # 모델 대답
+        response = openai_client.chat.completions.create(
+            model = "gpt-3.5-turbo",
+            messages = [
+                {'role': "system", "content": "주어진 질문에 대해서 간단하고 친절하게 대답해주세요. 반드시 한국어로 대답해주세요."},
+                {"role": "user", "content": transcription}
+            ],
+            temperature=0.7
+        )
+        res = response.choices[0].message.content
+        
+        # TODO: TTS
+        
+        return JSONResponse(content={"transcription": transcription, "modelanswer": res}, status_code=200)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))

@@ -6,6 +6,7 @@ import './App.css';
 function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [modelanswer, setModelAnswer] = useState('');
   const [audioData, setAudioData] = useState(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -81,6 +82,7 @@ function App() {
       });
       const data = await response.json();
       setTranscript(data.transcription);
+      setModelAnswer(data.modelanswer);
     } catch (error) {
       console.error('Error sending audio to server:', error);
     }
@@ -100,8 +102,12 @@ function App() {
         {isRecording ? 'Stop' : 'Start'}
       </button>
       <div>
-        <h2>Result:</h2>
+        <h2>Question:</h2>
         <p>{transcript}</p>
+      </div>
+      <div>
+        <h2>Answer:</h2>
+        <p>{modelanswer}</p>
       </div>
     </div>
   );
