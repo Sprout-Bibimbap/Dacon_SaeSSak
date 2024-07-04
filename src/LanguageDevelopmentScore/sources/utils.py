@@ -41,7 +41,7 @@ def get_model_tokenizer(args):
     elif args.model == "sBERTNew":
         model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = sBERTRegressorNew(model_name, args.config["is_freeze"])
+        model = sBERTRegressorNew(model_name, args.config["is_freeze"], version=2)
     else:
         raise ValueError(
             f"Unknown model: {args.config['model']}\tPossible Option: [sbert]"

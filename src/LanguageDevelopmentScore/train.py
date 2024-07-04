@@ -36,6 +36,8 @@ if __name__ == "__main__":
     seed_everything(args.config["seed"])
     args.model = model_identification(args)
     wandb.login(key=os.getenv("WANDB_API_KEY"))
-    wandb.init(project="SaeSSac-Score", name=f"{args.model}_{args.time}")
+    wandb.init(
+        project="SaeSSac-Score", name=f"{args.model}_{args.time}", config=args.config
+    )
     start_message(args)
     main(args)
