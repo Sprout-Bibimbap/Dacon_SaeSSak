@@ -25,3 +25,4 @@ test*
 exclude/
 .venv
 .vscode
+node_modules/
