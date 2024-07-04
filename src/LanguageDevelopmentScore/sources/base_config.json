@@ -1,5 +1,5 @@
 {
-    "model": "sBERTNewV2",
+    "model": "roberta-large",
     "data": {
         "repo_id": "SaeSSak/Conversation",
         "file_name": "PreprocessedDataV2.parquet",
@@ -7,11 +7,11 @@
         "output": ["나이"]
     },
     "env_path": "./.env",
-    "max_length": 128,
+    "max_length": 64,
     "valid_size":0.2,
     "is_freeze": true,
     "seed": 917,
-    "epochs": 10,
+    "epochs": 15,
     "learning_rate": 0.001,
     "criterion": "rmse",
     "optimizer": "adam",

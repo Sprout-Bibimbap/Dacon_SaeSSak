@@ -1,7 +1,7 @@
 import json
 import os
 from transformers import AutoTokenizer
-from sources.models import sBERTRegressor, sBERTRegressorNew
+from sources.models import sBERTRegressor, sBERTRegressorNew, RoBERTaRegressor
 import torch.nn as nn
 import torch
 from torch.optim import Adam
@@ -32,7 +32,9 @@ def model_identification(args):
     elif cleaned_model_name == "sbertnewv2":
         return "sBERTNew", "V2"
     elif cleaned_model_name == "robertabase":
-        return "sBERTNew", ""
+        return "RoBERTa-Base", ""
+    elif cleaned_model_name == "robertalarge":
+        return "RoBERTa-Large", ""
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -48,9 +50,16 @@ def get_model_tokenizer(args):
         model = sBERTRegressorNew(
             model_name, args.config["is_freeze"], version=args.version
         )
+    elif "RoBERTa" in args.model:
+        if args.model == "RoBERTa-Base":
+            model_name = "klue/roberta-base"
+        elif args.model == "RoBERTa-Large":
+            model_name = "klue/roberta-large"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = RoBERTaRegressor(model_name, args.config["is_freeze"])
     else:
         raise ValueError(
-            f"Unknown model: {args.config['model']}\tPossible Option: [sbert]"
+            f"Unknown model: {args.config['model']}\tPossible Option: [sBERT, sBERTNew, RoBERTa-Base, RoBERTa-Large]"
         )
     return model.to(args.device), tokenizer
 
@@ -88,13 +97,14 @@ class RMSELoss(nn.Module):
 def start_message(args):
     device_str = str(args.device)
     version = ":" + args.version if args.version else args.version
+    freeze = "[FREEZED]" if args.config["is_freeze"] else "[NOT FREEZED]"
     print(
         f"──────────────────────── TRAINING SETTINGS ───────────────────────\n"
         f" DEVICE: {device_str}   \n"
         f" SEED: {args.config['seed']}\n"
         f" CONFIG FILE: {args.config_path}\n"
         f" ENVIRONMENT PATH: {args.config['env_path']}\n"
-        f" MODEL NAME: {args.model}{version}\n"
+        f" MODEL NAME: {args.model}{version} {freeze}\n"
         f" TIMESTAMP: {args.time}\n"
         f"──────────────────────────────────────────────────────────────────"
     )
