@@ -2,7 +2,7 @@
     "model": "roberta-large",
     "data": {
         "repo_id": "SaeSSak/Conversation",
-        "file_name": "PreprocessedDataV2.parquet",
+        "file_name": "FinalData.parquet",
         "input": ["음성인식결과"],
         "output": ["나이"]
     },
