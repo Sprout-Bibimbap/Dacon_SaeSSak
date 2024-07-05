@@ -1,114 +1,95 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { useAudioRecorder } from './hooks/useAudioRecorder.js';
 import AudioVisualizer from './components/AudioVisualizer';
 import RecordingIndicator from './components/RecordingIndicator';
+import ErrorMessage from './components/ErrorMessage';
+import { useOpenAITTS } from './hooks/tts.js';
 import './App.css';
 
+const STT_URL = process.env.REACT_APP_STT_URL || 'http://localhost:8000/api/v1/response/stt';
+
 function App() {
-  const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [modelanswer, setModelAnswer] = useState('');
-  const [audioData, setAudioData] = useState(null);
-  const audioContextRef = useRef(null);
-  const analyserRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const animationFrameIdRef = useRef(null);
+  const [modelAnswer, setModelAnswer] = useState('');
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
-    };
-  }, []);
+  const { isRecording, audioData, startRecording, stopRecording } = useAudioRecorder({ mimeType: 'audio/webm;codecs=opus' });
+  const { audioUrl, getTTS } = useOpenAITTS();
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(analyserRef.current);
-
-      mediaRecorderRef.current = new MediaRecorder(stream);
-
-      mediaRecorderRef.current.ondataavailable = handleDataAvailable;
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-      updateAudioData();
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-    }
-  };
-
-  const updateAudioData = () => {
-    if (!isRecording) return;
-
-    const bufferLength = analyserRef.current.fftSize;
-    const dataArray = new Uint8Array(bufferLength);
-    analyserRef.current.getByteTimeDomainData(dataArray);
-    setAudioData(dataArray);
-
-    animationFrameIdRef.current = requestAnimationFrame(updateAudioData);
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      cancelAnimationFrame(animationFrameIdRef.current);
-      setAudioData(null);
-    }
-  };
-
-  const handleDataAvailable = async (event) => {
-    if (event.data.size > 0) {
-        const audioBlob = new Blob([event.data], { type: 'audio/wav' });
-        await sendAudioToServer(audioBlob);
-    }
-  };
-
-  const sendAudioToServer = async (audioBlob) => {
+  const sendAudioToServer = useCallback(async (audioBlob) => {
     const formData = new FormData();
-    formData.append('file', audioBlob, 'recording.wav');
+    formData.append('file', audioBlob, 'recording.webm');
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_STT_URL}`, { 
+      const response = await fetch(STT_URL, {
         method: 'POST',
         body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setTranscript(data.transcription);
-      setModelAnswer(data.modelanswer);
-    } catch (error) {
-      console.error('Error sending audio to server:', error);
+      setModelAnswer(data.model_answer);
+
+      await getTTS(data.model_answer);
+    } catch (err) {
+      setError('Error sending audio to server: ' + err.message);
     }
-  };
+  }, [getTTS]);
+
+  const handleStartRecording = useCallback(async () => {
+    try {
+      await startRecording();
+    } catch (err) {
+      setError('Failed to start recording: ' + err.message);
+    }
+  }, [startRecording]);
+
+  const handleStopRecording = useCallback(async () => {
+    try {
+      const audioBlob = await stopRecording();
+      if (audioBlob) {
+        await sendAudioToServer(audioBlob);
+      }
+    } catch (err) {
+      setError('Failed to stop recording: ' + err.message);
+    }
+  }, [stopRecording, sendAudioToServer]);
+
+  const memoizedAudioVisualizer = useMemo(() => (
+    <AudioVisualizer isRecording={isRecording} audioData={audioData} />
+  ), [isRecording, audioData]);
 
   return (
     <div className={`App ${isRecording ? 'recording' : ''}`}>
       <div className="visualizer-container">
-        {isRecording ? (
-          <AudioVisualizer isRecording={isRecording} audioData={audioData} />
-        ) : (
-          <div className="initial-circle"></div>
-        )}
+        {isRecording ? memoizedAudioVisualizer : <div className="initial-circle"></div>}
       </div>
       <RecordingIndicator isListening={isRecording} isRecording={isRecording} />
-      <button onClick={isRecording ? stopRecording : startRecording}>
+      <button
+        onClick={isRecording ? handleStopRecording : handleStartRecording}
+        aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+      >
         {isRecording ? 'Stop' : 'Start'}
       </button>
+      {error && <ErrorMessage message={error} />}
       <div>
         <h2>Question:</h2>
         <p>{transcript}</p>
       </div>
       <div>
         <h2>Answer:</h2>
-        <p>{modelanswer}</p>
+        <p>{modelAnswer}</p>
       </div>
+      {audioUrl && (
+        <audio controls>
+          <source src={audioUrl} type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
+      )}
     </div>
   );
 }

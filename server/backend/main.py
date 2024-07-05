@@ -8,7 +8,7 @@ from middlewares.time import StartTimeMiddleware
 from database.mongodb import MongoDBClient
 from exceptions.loggers import MongoLogger
 from model.openai import OpenAIClient
-from routers import stt
+from routers import stt, tts
 
 
 @asynccontextmanager
@@ -47,7 +47,8 @@ app.add_middleware(
 app.add_middleware(StartTimeMiddleware)
 
 # router 추가
-app.include_router(stt.router, prefix="/api/v1/stt")
+app.include_router(stt.router, prefix="/api/v1/response")
+app.include_router(tts.router, prefix="/api/v1/response")
 
 
 if __name__ == "__main__":
