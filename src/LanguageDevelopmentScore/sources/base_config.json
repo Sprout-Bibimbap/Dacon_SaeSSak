@@ -1,5 +1,5 @@
 {
-    "model": "roberta-large",
+    "model": "robertanew-large",
     "data": {
         "repo_id": "SaeSSak/Conversation",
         "file_name": "FinalData.parquet",
@@ -13,7 +13,7 @@
     "seed": 917,
     "epochs": 15,
     "learning_rate": 0.001,
-    "criterion": "rmse",
+    "criterion": "huber",
     "optimizer": "adam",
     "batch_size": 128,
     "save_interval": 5

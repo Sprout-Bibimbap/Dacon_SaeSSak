@@ -1,7 +1,12 @@
 import json
 import os
 from transformers import AutoTokenizer
-from sources.models import sBERTRegressor, sBERTRegressorNew, RoBERTaRegressor
+from sources.models import (
+    sBERTRegressor,
+    sBERTRegressorNew,
+    RoBERTaRegressor,
+    RoBERTaRegressorNew,
+)
 import torch.nn as nn
 import torch
 from torch.optim import Adam
@@ -35,6 +40,10 @@ def model_identification(args):
         return "RoBERTa-Base", ""
     elif cleaned_model_name == "robertalarge":
         return "RoBERTa-Large", ""
+    elif cleaned_model_name == "robertanewbase":
+        return "RoBERTaNew-Base", ""
+    elif cleaned_model_name == "robertanewlarge":
+        return "RoBERTaNew-Large", ""
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -50,16 +59,23 @@ def get_model_tokenizer(args):
         model = sBERTRegressorNew(
             model_name, args.config["is_freeze"], version=args.version
         )
-    elif "RoBERTa" in args.model:
+    elif "RoBERTa" in args.model and "New" not in args.model:
         if args.model == "RoBERTa-Base":
             model_name = "klue/roberta-base"
         elif args.model == "RoBERTa-Large":
             model_name = "klue/roberta-large"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = RoBERTaRegressor(model_name, args.config["is_freeze"])
+    elif "RoBERTa" in args.model and "New" in args.model:
+        if args.model == "RoBERTaNew-Base":
+            model_name = "klue/roberta-base"
+        elif args.model == "RoBERTaNew-Large":
+            model_name = "klue/roberta-large"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = RoBERTaRegressorNew(model_name, args.config["is_freeze"])
     else:
         raise ValueError(
-            f"Unknown model: {args.config['model']}\tPossible Option: [sBERT, sBERTNew, RoBERTa-Base, RoBERTa-Large]"
+            f"Unknown model: {args.config['model']}\tPossible Option: [sBERT, sBERTNew, sBERTNewV2, RoBERTa-Base, RoBERTa-Large, RoBERTaNew-Base, RoBERTaNew-Large]"
         )
     return model.to(args.device), tokenizer
 
@@ -81,6 +97,8 @@ def get_criterion(config):
         return nn.L1Loss()
     elif crt == "rmse":
         return RMSELoss()
+    elif crt == "huber":
+        return nn.HuberLoss()
     else:
         raise ValueError(f"Unknown criterion: {config['criterion']}")
 
