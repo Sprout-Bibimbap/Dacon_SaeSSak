@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { useAudioRecorder } from './hooks/useAudioRecorder.js';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import AudioVisualizer from './components/AudioVisualizer';
 import RecordingIndicator from './components/RecordingIndicator';
 import ErrorMessage from './components/ErrorMessage';
 import { useOpenAITTS } from './hooks/tts.js';
+import { useAudioRecorder } from './hooks/useAudioRecorder.js';
 import './App.css';
 
 const STT_URL = process.env.REACT_APP_STT_URL || 'http://localhost:8000/api/v1/response/stt';
@@ -14,7 +14,13 @@ function App() {
   const [error, setError] = useState(null);
 
   const { isRecording, audioData, startRecording, stopRecording } = useAudioRecorder({ mimeType: 'audio/webm;codecs=opus' });
-  const { audioUrl, getTTS } = useOpenAITTS();
+  const { isPlaying, isLoading, error: ttsError, getTTS, stopAudio } = useOpenAITTS();
+
+  useEffect(() => {
+    if (ttsError) {
+      setError('TTS Error: ' + ttsError);
+    }
+  }, [ttsError]);
 
   const sendAudioToServer = useCallback(async (audioBlob) => {
     const formData = new FormData();
@@ -42,11 +48,12 @@ function App() {
 
   const handleStartRecording = useCallback(async () => {
     try {
+      stopAudio();
       await startRecording();
     } catch (err) {
       setError('Failed to start recording: ' + err.message);
     }
-  }, [startRecording]);
+  }, [startRecording, stopAudio]);
 
   const handleStopRecording = useCallback(async () => {
     try {
@@ -72,6 +79,7 @@ function App() {
       <button
         onClick={isRecording ? handleStopRecording : handleStartRecording}
         aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+        disabled={isLoading}
       >
         {isRecording ? 'Stop' : 'Start'}
       </button>
@@ -84,12 +92,8 @@ function App() {
         <h2>Answer:</h2>
         <p>{modelAnswer}</p>
       </div>
-      {audioUrl && (
-        <audio controls>
-          <source src={audioUrl} type="audio/mpeg" />
-          Your browser does not support the audio element.
-        </audio>
-      )}
+      {isLoading && <p>Generating audio...</p>}
+      {isPlaying && <p>Playing audio...</p>}
     </div>
   );
 }

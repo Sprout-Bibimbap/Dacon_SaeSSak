@@ -1,9 +1,42 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 export const useOpenAITTS = () => {
-  const [audioUrl, setAudioUrl] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const audioContextRef = useRef(null);
+  const sourceNodeRef = useRef(null);
 
-  const getTTS = async (text) => {
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  const playAudioBuffer = useCallback((audioBuffer) => {
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.stop();
+    }
+    sourceNodeRef.current = audioContextRef.current.createBufferSource();
+    sourceNodeRef.current.buffer = audioBuffer;
+    sourceNodeRef.current.connect(audioContextRef.current.destination);
+    sourceNodeRef.current.start();
+    setIsPlaying(true);
+    sourceNodeRef.current.onended = () => setIsPlaying(false);
+  }, []);
+
+  const getTTS = useCallback(async (text) => {
+    setIsLoading(true);
+    setError(null);
+
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+    }
+
+    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    
     try {
       const response = await fetch('https://api.openai.com/v1/audio/speech', {
         method: 'POST',
@@ -13,8 +46,8 @@ export const useOpenAITTS = () => {
         },
         body: JSON.stringify({
           model: 'tts-1',
-          input: text,
           voice: 'alloy',
+          input: text,
         }),
       });
 
@@ -22,14 +55,37 @@ export const useOpenAITTS = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setAudioUrl(url);
-    } catch (error) {
-      console.error('Error fetching TTS:', error);
-      throw error;
-    }
-  };
+      const reader = response.body.getReader();
+      const streamAudio = new ReadableStream({
+        async start(controller) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+          controller.close();
+        },
+      });
 
-  return { audioUrl, getTTS };
+      const audioArrayBuffer = await new Response(streamAudio).arrayBuffer();
+      const audioBuffer = await audioContextRef.current.decodeAudioData(audioArrayBuffer);
+      playAudioBuffer(audioBuffer);
+
+      setIsLoading(false);
+    } catch (err) {
+      console.error('TTS Error:', err);
+      setError('TTS Error: ' + err.message);
+      setIsLoading(false);
+    }
+  }, [playAudioBuffer]);
+
+  const stopAudio = useCallback(() => {
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.stop();
+    }
+    setIsPlaying(false);
+    setIsLoading(false);
+  }, []);
+
+  return { isPlaying, isLoading, error, getTTS, stopAudio };
 };

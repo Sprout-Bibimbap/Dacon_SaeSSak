@@ -1,78 +1,50 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
-export const useAudioRecorder = (options = {}) => {
+export const useAudioRecorder = ({ mimeType = 'audio/webm;codecs=opus' }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioData, setAudioData] = useState(null);
-  const [error, setError] = useState(null);
-
-  const audioContextRef = useRef(null);
-  const analyserRef = useRef(null);
   const mediaRecorderRef = useRef(null);
-  const animationFrameIdRef = useRef(null);
+  const chunksRef = useRef([]);
 
   const startRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(analyserRef.current);
-
-      const mimeType = options.mimeType || 'audio/webm;codecs=opus';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        throw new Error(`MIME type ${mimeType} is not supported`);
-      }
-
       mediaRecorderRef.current = new MediaRecorder(stream, { mimeType });
+      
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: mimeType });
+        setAudioData(blob);
+        chunksRef.current = [];
+      };
+
       mediaRecorderRef.current.start();
       setIsRecording(true);
-
-      const updateAudioData = () => {
-        const bufferLength = analyserRef.current.fftSize;
-        const dataArray = new Uint8Array(bufferLength);
-        analyserRef.current.getByteTimeDomainData(dataArray);
-        setAudioData(dataArray);
-        animationFrameIdRef.current = requestAnimationFrame(updateAudioData);
-      };
-      updateAudioData();
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      console.error('Error starting recording:', error);
     }
-  }, [options.mimeType]);
+  }, [mimeType]);
 
   const stopRecording = useCallback(() => {
-    return new Promise((resolve) => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-        setIsRecording(false);
-        cancelAnimationFrame(animationFrameIdRef.current);
-        setAudioData(null);
-        
-        mediaRecorderRef.current.ondataavailable = (event) => {
-          resolve(event.data);
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      return new Promise((resolve) => {
+        mediaRecorderRef.current.onstop = () => {
+          const blob = new Blob(chunksRef.current, { type: mimeType });
+          setAudioData(blob);
+          chunksRef.current = [];
+          resolve(blob);
         };
-      } else {
-        resolve(null);
-      }
-    });
-  }, []);
+      });
+    }
+    return Promise.resolve(null);
+  }, [isRecording, mimeType]);
 
-  useEffect(() => {
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
-    };
-  }, []);
-
-  return {
-    isRecording,
-    audioData,
-    error,
-    startRecording,
-    stopRecording,
-  };
+  return { isRecording, audioData, startRecording, stopRecording };
 };
