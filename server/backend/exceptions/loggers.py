@@ -4,10 +4,9 @@ import time
 import logging
 import datetime
 import traceback
+from config import settings 
 from typing import Any, Dict, Optional
 from fastapi import Request, BackgroundTasks
-
-from config.utils import config
 
 
 class MongoLogger:
@@ -48,9 +47,9 @@ class MongoLogger:
             log_entry["exception"] = exception_info
 
         index_name = (
-            config["DB"]["MONGO_ERROR_LOG_COLLECTION"]
+            settings.ERROR_LOG_COLLECTION
             if level == logging.ERROR
-            else config["DB"]["MONGO_INFO_LOG_COLLECTION"]
+            else settings.INFO_LOG_COLLECTION
         )
         try:
             await cls.mongo_client.index(index=index_name, document=log_entry)

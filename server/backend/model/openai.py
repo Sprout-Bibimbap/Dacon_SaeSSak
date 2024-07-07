@@ -1,5 +1,5 @@
 from openai import OpenAI
-from config.utils import config
+from config import settings 
 from fastapi import HTTPException, status
 
 
@@ -15,7 +15,7 @@ class OpenAIClient:
     @classmethod
     async def _create_instance(cls):
         try:
-            client = OpenAI(api_key=config["API"]["OPENAI_API_KEY"])
+            client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
             return client
         except Exception as e:
