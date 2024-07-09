@@ -1,19 +1,20 @@
 {
     "model": "robertanew-large",
     "data": {
+        "balancing": false,
         "repo_id": "SaeSSak/Conversation",
         "file_name": "FinalData.parquet",
         "input": ["음성인식결과"],
-        "output": ["나이"]
+        "output": "나이"
     },
     "env_path": "./.env",
     "max_length": 64,
     "valid_size":0.2,
     "is_freeze": true,
     "seed": 917,
-    "epochs": 15,
+    "epochs": 30,
     "learning_rate": 0.001,
-    "criterion": "huber",
+    "criterion": "rmse",
     "optimizer": "adam",
     "batch_size": 128,
     "save_interval": 5

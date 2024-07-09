@@ -16,7 +16,7 @@ class CustomDataset(Dataset):
             repo_id, file_name, repo_type="dataset", use_auth_token=api_key
         )
         data = pd.read_parquet(file_path)
-        self.data = data_preprocessing(data)
+        self.data = data_preprocessing(data, self.data_config)
         self.X = self.data[self.data_config["input"]].values.squeeze()
         self.y = self.data[self.data_config["output"]].values.squeeze()
         print(
@@ -80,6 +80,32 @@ def get_loader(config, tokenizer):
     return train_dataloader, valid_dataloader
 
 
-def data_preprocessing(data):
-    """필요하다면 구현"""
+def data_preprocessing(data, config):
+    if config["balancing"]:
+        print("**DATA LABEL BALANCING**")
+        label_counts = data[config["output"]].value_counts()
+        min_count = label_counts.min()
+
+        resampled_data = pd.DataFrame()
+        for label in label_counts.index:
+            label_data = data[data[config["output"]] == label]
+            resampled_label_data = label_data.sample(min_count, replace=False)
+
+            resampled_data = pd.concat(
+                [resampled_data, resampled_label_data], ignore_index=True
+            )
+
+        data = resampled_data.sample(frac=1).reset_index(drop=True)
+    else:
+        pass
+    print("──────────────────────────────────────────────────────────────────")
+    print(" Data Counts:")
+    for label in sorted(data[config["output"]].unique()):
+        count = len(data[data[config["output"]] == label])
+        print(f" Label {label}: {count} samples")
+
+    total_count = len(data)
+    print(f" Total number of samples: {total_count}")
+    print("──────────────────────────────────────────────────────────────────")
+
     return data

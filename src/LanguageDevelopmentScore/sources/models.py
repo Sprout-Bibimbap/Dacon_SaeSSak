@@ -72,7 +72,7 @@ class RoBERTaRegressor(nn.Module):
 
         if is_freeze:
             print("**PRETRAINED MODEL FREEZE**")
-            for param in self.sbert.parameters():
+            for param in self.bert.parameters():
                 param.requires_grad = False
 
     def mean_pooling(self, model_output, attention_mask):
