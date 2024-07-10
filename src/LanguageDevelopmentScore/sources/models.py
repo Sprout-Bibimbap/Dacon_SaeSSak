@@ -97,7 +97,7 @@ class RoBERTaRegressor(nn.Module):
 
 
 class RoBERTaRegressorNew(nn.Module):
-    def __init__(self, model_name, is_freeze=False):
+    def __init__(self, model_name, is_freeze=False, is_sigmoid=False):
         super(RoBERTaRegressorNew, self).__init__()
         self.bert = AutoModel.from_pretrained(model_name)
         self.fc1 = nn.Linear(self.bert.config.hidden_size, 1024)
@@ -107,6 +107,7 @@ class RoBERTaRegressorNew(nn.Module):
         self.activation = nn.GELU()
         self.dropout = nn.Dropout(0.3)
 
+        self.sigmoid_scaling = is_sigmoid
         if is_freeze:
             print("**PRETRAINED MODEL FREEZE**")
             for param in self.bert.parameters():
@@ -131,4 +132,6 @@ class RoBERTaRegressorNew(nn.Module):
         x = self.activation(self.fc3(x))
         x = self.dropout(x)
         regression_output = self.regressor(x)
+        if self.sigmoid_scaling:
+            regression_output = torch.sigmoid(regression_output)
         return regression_output.squeeze()

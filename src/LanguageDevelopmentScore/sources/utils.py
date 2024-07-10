@@ -72,7 +72,9 @@ def get_model_tokenizer(args):
         elif args.model == "RoBERTaNew-Large":
             model_name = "klue/roberta-large"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = RoBERTaRegressorNew(model_name, args.config["is_freeze"])
+        model = RoBERTaRegressorNew(
+            model_name, args.config["is_freeze"], args.config["sigmoid_scaling"]
+        )
     else:
         raise ValueError(
             f"Unknown model: {args.config['model']}\tPossible Option: [sBERT, sBERTNew, sBERTNewV2, RoBERTa-Base, RoBERTa-Large, RoBERTaNew-Base, RoBERTaNew-Large]"

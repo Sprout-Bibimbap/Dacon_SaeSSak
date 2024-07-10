@@ -16,7 +16,7 @@ class CustomDataset(Dataset):
             repo_id, file_name, repo_type="dataset", use_auth_token=api_key
         )
         data = pd.read_parquet(file_path)
-        self.data = data_preprocessing(data, self.data_config)
+        self.data = data_preprocessing(data, config)
         self.X = self.data[self.data_config["input"]].values.squeeze()
         self.y = self.data[self.data_config["output"]].values.squeeze()
         print(
@@ -81,14 +81,15 @@ def get_loader(config, tokenizer):
 
 
 def data_preprocessing(data, config):
-    if config["balancing"]:
-        print("**DATA LABEL BALANCING**")
-        label_counts = data[config["output"]].value_counts()
+    data_config = config["data"]
+    if data_config["balancing"]:
+        print("**APPLYING LABEL BALANCING FOR IMBALANCED DATA**")
+        label_counts = data[data_config["output"]].value_counts()
         min_count = label_counts.min()
 
         resampled_data = pd.DataFrame()
         for label in label_counts.index:
-            label_data = data[data[config["output"]] == label]
+            label_data = data[data[data_config["output"]] == label]
             resampled_label_data = label_data.sample(min_count, replace=False)
 
             resampled_data = pd.concat(
@@ -98,10 +99,21 @@ def data_preprocessing(data, config):
         data = resampled_data.sample(frac=1).reset_index(drop=True)
     else:
         pass
+
+    if config.get("sigmoid_scaling"):
+        print("**APPLYING SIGMOID SCALING ON LABELS**")
+        min_label = data[data_config["output"]].min()
+        max_label = data[data_config["output"]].max()
+        data[data_config["output"]] = (data[data_config["output"]] - min_label) / (
+            max_label - min_label
+        )  # MIN-MAX SCALING
+    else:
+        pass
+
     print("──────────────────────────────────────────────────────────────────")
     print(" Data Counts:")
-    for label in sorted(data[config["output"]].unique()):
-        count = len(data[data[config["output"]] == label])
+    for label in sorted(data[data_config["output"]].unique()):
+        count = len(data[data[data_config["output"]] == label])
         print(f" Label {label}: {count} samples")
 
     total_count = len(data)
