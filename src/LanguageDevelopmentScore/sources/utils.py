@@ -73,7 +73,10 @@ def get_model_tokenizer(args):
             model_name = "klue/roberta-large"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = RoBERTaRegressorNew(
-            model_name, args.config["is_freeze"], args.config["sigmoid_scaling"]
+            model_name,
+            args.config["is_freeze"],
+            args.config["sigmoid_scaling"],
+            args.config["pooling_method"],
         )
     else:
         raise ValueError(
