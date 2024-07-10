@@ -11,11 +11,11 @@
     "max_length": 64,
     "valid_size":0.2,
     "is_freeze": true,
-    "sigmoid_scaling": true,
+    "sigmoid_scaling": false,
     "seed": 917,
     "epochs": 30,
     "learning_rate": 0.001,
-    "criterion": "rmse",
+    "criterion": "mae",
     "optimizer": "adam",
     "batch_size": 128,
     "save_interval": 5

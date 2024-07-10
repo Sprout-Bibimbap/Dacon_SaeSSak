@@ -28,7 +28,7 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         X = self.X[idx]
-        y = torch.tensor(self.y[idx] * 10, dtype=torch.float32)
+        y = torch.tensor(self.y[idx], dtype=torch.float32)
         return X, y
 
 
@@ -108,7 +108,7 @@ def data_preprocessing(data, config):
             max_label - min_label
         )  # MIN-MAX SCALING
     else:
-        pass
+        data[data_config["output"]] = data[data_config["output"]] * 10
 
     print("──────────────────────────────────────────────────────────────────")
     print(" Data Counts:")
@@ -119,5 +119,4 @@ def data_preprocessing(data, config):
     total_count = len(data)
     print(f" Total number of samples: {total_count}")
     print("──────────────────────────────────────────────────────────────────")
-
     return data
