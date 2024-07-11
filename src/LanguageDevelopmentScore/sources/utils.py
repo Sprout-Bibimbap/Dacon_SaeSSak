@@ -9,10 +9,16 @@ from sources.models import (
 )
 import torch.nn as nn
 import torch
-from torch.optim import Adam
+from torch.optim import Adam, SGD, AdamW
 import re
 import random
 import numpy as np
+from torch.optim.lr_scheduler import (
+    StepLR,
+    ExponentialLR,
+    ReduceLROnPlateau,
+    CosineAnnealingLR,
+)
 
 
 def seed_everything(seed):
@@ -86,26 +92,92 @@ def get_model_tokenizer(args):
 
 
 def get_optimizer(config, model):
-    if config["optimizer"].lower() == "adam":
-        return Adam(model.parameters(), lr=config["learning_rate"])
-    elif config["optimizer"].lower() == "sgd":
-        return torch.optim.SGD(model.parameters(), lr=config["learning_rate"])
+    optimizer_type = config["optimizer"].lower()
+    lr = config["learning_rate"]
+
+    if optimizer_type == "adam":
+        return Adam(model.parameters(), lr=lr)
+    elif optimizer_type == "adamw":
+        return AdamW(model.parameters(), lr=lr, weight_decay=0.01)
+    elif optimizer_type == "sgd":
+        return SGD(model.parameters(), lr=lr, momentum=0.9)
     else:
         raise ValueError(f"Unknown optimizer: {config['optimizer']}")
 
 
 def get_criterion(config):
     crt = config["criterion"].lower().strip()
+
     if crt == "mse":
-        return nn.MSELoss()
+        criterion = nn.MSELoss()
+        print("Initialized Mean Squared Error Loss")
+
     elif crt == "mae":
-        return nn.L1Loss()
+        criterion = nn.L1Loss()
+        print("Initialized Mean Absolute Error Loss")
+
     elif crt == "rmse":
-        return RMSELoss()
+        criterion = RMSELoss()  # 가정: RMSELoss는 사용자 정의 손실 함수
+        print("Initialized Root Mean Squared Error Loss")
+
     elif crt == "huber":
-        return nn.HuberLoss()
+        criterion = nn.HuberLoss()
+        print("Initialized Huber Loss")
+
     else:
         raise ValueError(f"Unknown criterion: {config['criterion']}")
+
+    return criterion
+
+
+def get_scheduler(config, optimizer):
+    scheduler_type = config["scheduler"].lower().strip()
+
+    if scheduler_type == "steplr":
+        # StepLR: 에폭마다 학습률을 일정 비율로 감소시킵니다.
+        # step_size: 학습률을 감소시키는 주기
+        # gamma: 학습률 감소율
+        step_size = 8
+        gamma = 0.1
+        scheduler = StepLR(optimizer, step_size=step_size, gamma=gamma)
+        print(f"Initialized StepLR with step_size={step_size} and gamma={gamma}")
+
+    elif scheduler_type == "exponentiallr":
+        # ExponentialLR: 에폭마다 학습률을 지수적으로 감소시킵니다.
+        # gamma: 각 에폭마다 적용할 감소율
+        gamma = 0.95
+        scheduler = ExponentialLR(optimizer, gamma=gamma)
+        print(f"Initialized ExponentialLR with gamma={gamma}")
+
+    elif scheduler_type == "reducelronplateau":
+        # ReduceLROnPlateau: 검증 손실이 개선되지 않을 때 학습률을 감소시킵니다.
+        # mode: 'min' 또는 'max' (손실을 최소화하거나 정확도를 최대화할 때)
+        # factor: 학습률 감소율
+        # patience: 몇 에폭 동안 개선이 없을 때 학습률을 감소시킬지
+        mode = "min"
+        factor = 0.1
+        patience = 6
+        verbose = True
+        scheduler = ReduceLROnPlateau(
+            optimizer, mode=mode, factor=factor, patience=patience, verbose=verbose
+        )
+        print(
+            f"Initialized ReduceLROnPlateau with mode={mode}, factor={factor}, patience={patience}, verbose={verbose}"
+        )
+
+    elif scheduler_type == "cosineannealinglr":
+        # CosineAnnealingLR: 코사인 함수의 형태로 학습률을 조절합니다.
+        # T_max: 하나의 학습률 주기 길이
+        # eta_min: 학습률의 하한선
+        T_max = 10
+        eta_min = 0
+        scheduler = CosineAnnealingLR(optimizer, T_max=T_max, eta_min=eta_min)
+        print(f"Initialized CosineAnnealingLR with T_max={T_max}, eta_min={eta_min}")
+
+    else:
+        raise ValueError(f"Unknown scheduler type: {scheduler_type}")
+
+    return scheduler
 
 
 class RMSELoss(nn.Module):

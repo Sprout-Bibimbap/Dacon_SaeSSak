@@ -1,8 +1,9 @@
 import os
 import torch
 from tqdm import tqdm
-from sources.utils import get_criterion, get_optimizer
+from sources.utils import get_criterion, get_optimizer, get_scheduler
 import wandb
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
 class Trainer:
@@ -15,6 +16,7 @@ class Trainer:
 
         self.criterion = get_criterion(args.config)
         self.optimizer = get_optimizer(args.config, self.model)
+        self.scheduler = get_scheduler(args.config, self.optimizer)
 
         self.train_loader = train_loader
         self.valid_loader = valid_loader
@@ -53,6 +55,12 @@ class Trainer:
                 },
                 step=epoch,
             )
+            # 스케줄러 업데이트
+            if isinstance(self.scheduler, ReduceLROnPlateau):
+                self.scheduler.step(validation_loss)
+            else:
+                self.scheduler.step()
+
             if validation_loss < self.best_loss:
                 print("**Best Model**")
                 self.best_loss = validation_loss
