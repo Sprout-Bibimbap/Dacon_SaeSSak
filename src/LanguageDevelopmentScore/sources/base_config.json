@@ -16,7 +16,7 @@
     "scheduler": "reducelronplateau",
     "seed": 917,
     "epochs": 100,
-    "learning_rate": 0.05,
+    "learning_rate": 0.0005,
     "criterion": "rmse",
     "optimizer": "adamw",
     "batch_size": 128,
