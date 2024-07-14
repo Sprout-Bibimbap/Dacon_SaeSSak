@@ -16,17 +16,20 @@ export const useAudioRecorder = ({ mimeType = 'audio/webm;codecs=opus' }) => {
           chunksRef.current.push(event.data);
         }
       };
-
       mediaRecorderRef.current.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: mimeType });
         setAudioData(blob);
         chunksRef.current = [];
       };
-
-      mediaRecorderRef.current.start();
+      await new Promise(resolve => {
+        mediaRecorderRef.current.onstart = resolve;
+        mediaRecorderRef.current.start();
+      });
+  
       setIsRecording(true);
     } catch (error) {
       console.error('Error starting recording:', error);
+      throw error; // 에러를 상위로 전파
     }
   }, [mimeType]);
 

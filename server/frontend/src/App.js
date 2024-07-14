@@ -1,100 +1,40 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import AudioVisualizer from './components/AudioVisualizer';
-import RecordingIndicator from './components/RecordingIndicator';
-import ErrorMessage from './components/ErrorMessage';
-import { useOpenAITTS } from './hooks/tts.js';
-import { useAudioRecorder } from './hooks/useAudioRecorder.js';
-import './App.css';
-
-const STT_URL = process.env.REACT_APP_STT_URL || 'http://localhost:8000/api/v1/response/stt';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './components/Login';
+import ChatBot from './components/ChatBot';
+import Report from './components/Report';
 
 function App() {
-  const [transcript, setTranscript] = useState('');
-  const [modelAnswer, setModelAnswer] = useState('');
-  const [error, setError] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-  const { isRecording, audioData, startRecording, stopRecording } = useAudioRecorder({ mimeType: 'audio/webm;codecs=opus' });
-  const { isPlaying, isLoading, error: ttsError, getTTS, stopAudio } = useOpenAITTS();
+  const handleLogin = (username, password) => {
+    // 여기에 실제 로그인 로직을 구현합니다.
+    console.log('Login attempt:', username, password);
+    setIsLoggedIn(true);
+  };
 
-  useEffect(() => {
-    if (ttsError) {
-      setError('TTS Error: ' + ttsError);
-    }
-  }, [ttsError]);
-
-  const sendAudioToServer = useCallback(async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'recording.webm');
-
-    try {
-      const response = await fetch(STT_URL, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setTranscript(data.transcription);
-      setModelAnswer(data.model_answer);
-
-      await getTTS(data.model_answer);
-    } catch (err) {
-      setError('Error sending audio to server: ' + err.message);
-    }
-  }, [getTTS]);
-
-  const handleStartRecording = useCallback(async () => {
-    try {
-      stopAudio();
-      await startRecording();
-    } catch (err) {
-      setError('Failed to start recording: ' + err.message);
-    }
-  }, [startRecording, stopAudio]);
-
-  const handleStopRecording = useCallback(async () => {
-    try {
-      const audioBlob = await stopRecording();
-      if (audioBlob) {
-        await sendAudioToServer(audioBlob);
-      }
-    } catch (err) {
-      setError('Failed to stop recording: ' + err.message);
-    }
-  }, [stopRecording, sendAudioToServer]);
-
-  const memoizedAudioVisualizer = useMemo(() => (
-    <AudioVisualizer isRecording={isRecording} audioData={audioData} />
-  ), [isRecording, audioData]);
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   return (
-    <div className={`App ${isRecording ? 'recording' : ''}`}>
-      <div className="visualizer-container">
-        {isRecording ? memoizedAudioVisualizer : <div className="initial-circle"></div>}
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={
+            isLoggedIn ? <Navigate to="/chat" replace /> : <Login onLogin={handleLogin} />
+          } />
+          <Route 
+            path="/chat" 
+            element={isLoggedIn ? <ChatBot onLogout={handleLogout} /> : <Navigate to="/" replace />} 
+          />
+          <Route 
+            path="/report" 
+            element={isLoggedIn ? <Report onLogout={handleLogout} /> : <Navigate to="/" replace />} 
+          />
+        </Routes>
       </div>
-      <RecordingIndicator isListening={isRecording} isRecording={isRecording} />
-      <button
-        onClick={isRecording ? handleStopRecording : handleStartRecording}
-        aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-        disabled={isLoading}
-      >
-        {isRecording ? 'Stop' : 'Start'}
-      </button>
-      {error && <ErrorMessage message={error} />}
-      <div>
-        <h2>Question:</h2>
-        <p>{transcript}</p>
-      </div>
-      <div>
-        <h2>Answer:</h2>
-        <p>{modelAnswer}</p>
-      </div>
-      {isLoading && <p>Generating audio...</p>}
-      {isPlaying && <p>Playing audio...</p>}
-    </div>
+    </Router>
   );
 }
 
