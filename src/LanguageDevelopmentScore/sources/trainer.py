@@ -31,7 +31,7 @@ class Trainer:
             print("=" * 50)
             self.model.train()
             running_loss = 0.0
-            for inputs, targets in tqdm(self.train_loader):
+            for inputs, targets in tqdm(self.train_loader, ncols=100):
                 inputs = {key: val.to(self.device) for key, val in inputs.items()}
                 targets = targets.to(self.device)
 
@@ -70,7 +70,7 @@ class Trainer:
         self.model.eval()
         total_loss = 0.0
         with torch.no_grad():
-            for inputs, targets in tqdm(self.valid_loader):
+            for inputs, targets in tqdm(self.valid_loader, ncols=100):
                 inputs = {key: val.to(self.device) for key, val in inputs.items()}
                 targets = targets.to(self.device)
                 outputs = self.model(**inputs)

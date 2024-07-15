@@ -145,7 +145,7 @@ def get_scheduler(config, optimizer):
     elif scheduler_type == "exponentiallr":
         # ExponentialLR: 에폭마다 학습률을 지수적으로 감소시킵니다.
         # gamma: 각 에폭마다 적용할 감소율
-        gamma = 0.95
+        gamma = 0.97
         scheduler = ExponentialLR(optimizer, gamma=gamma)
         print(f"Initialized ExponentialLR with gamma={gamma}")
 
