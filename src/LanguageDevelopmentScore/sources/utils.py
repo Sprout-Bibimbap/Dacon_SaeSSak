@@ -6,6 +6,7 @@ from sources.models import (
     sBERTRegressorNew,
     RoBERTaRegressor,
     RoBERTaRegressorNew,
+    RoBERTaRegressorDeep,
 )
 import torch.nn as nn
 import torch
@@ -50,6 +51,10 @@ def model_identification(args):
         return "RoBERTaNew-Base", ""
     elif cleaned_model_name == "robertanewlarge":
         return "RoBERTaNew-Large", ""
+    elif cleaned_model_name == "robertadeepbase":
+        return "RoBERTaDeep-Base", ""
+    elif cleaned_model_name == "robertadeeplarge":
+        return "RoBERTaDeep-Large", ""
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -65,20 +70,34 @@ def get_model_tokenizer(args):
         model = sBERTRegressorNew(
             model_name, args.config["is_freeze"], version=args.version
         )
-    elif "RoBERTa" in args.model and "New" not in args.model:
+    elif (
+        "RoBERTa" in args.model and "New" not in args.model and "Deep" not in args.model
+    ):
         if args.model == "RoBERTa-Base":
             model_name = "klue/roberta-base"
         elif args.model == "RoBERTa-Large":
             model_name = "klue/roberta-large"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = RoBERTaRegressor(model_name, args.config["is_freeze"])
-    elif "RoBERTa" in args.model and "New" in args.model:
+    elif "RoBERTa" in args.model and "New" in args.model and "Deep" not in args.model:
         if args.model == "RoBERTaNew-Base":
             model_name = "klue/roberta-base"
         elif args.model == "RoBERTaNew-Large":
             model_name = "klue/roberta-large"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = RoBERTaRegressorNew(
+            model_name,
+            args.config["is_freeze"],
+            args.config["sigmoid_scaling"],
+            args.config["pooling_method"],
+        )
+    elif "RoBERTa" in args.model and "New" not in args.model and "Deep" in args.model:
+        if args.model == "RoBERTaNew-Base":
+            model_name = "klue/roberta-base"
+        elif args.model == "RoBERTaNew-Large":
+            model_name = "klue/roberta-large"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = RoBERTaRegressorDeep(
             model_name,
             args.config["is_freeze"],
             args.config["sigmoid_scaling"],
@@ -155,11 +174,19 @@ def get_scheduler(config, optimizer):
         # factor: 학습률 감소율
         # patience: 몇 에폭 동안 개선이 없을 때 학습률을 감소시킬지
         mode = "min"
-        factor = 0.5
+        factor = 0.1
         patience = 6
         verbose = True
+        threshold = (0.05,)
+        threshold_mode = "abs"
         scheduler = ReduceLROnPlateau(
-            optimizer, mode=mode, factor=factor, patience=patience, verbose=verbose
+            optimizer,
+            mode=mode,
+            factor=factor,
+            patience=patience,
+            threshold=threshold,
+            threshold_mode=threshold_mode,
+            verbose=verbose,
         )
         print(
             f"Initialized ReduceLROnPlateau with mode={mode}, factor={factor}, patience={patience}, verbose={verbose}"

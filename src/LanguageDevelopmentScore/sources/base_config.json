@@ -1,5 +1,5 @@
 {
-    "model": "robertanew-large",
+    "model": "robertadeep-large",
     "data": {
         "balancing": false,
         "repo_id": "SaeSSak/Conversation",
