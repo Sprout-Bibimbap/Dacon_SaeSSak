@@ -92,9 +92,9 @@ def get_model_tokenizer(args):
             args.config["pooling_method"],
         )
     elif "RoBERTa" in args.model and "New" not in args.model and "Deep" in args.model:
-        if args.model == "RoBERTaNew-Base":
+        if args.model == "RoBERTaDeep-Base":
             model_name = "klue/roberta-base"
-        elif args.model == "RoBERTaNew-Large":
+        elif args.model == "RoBERTaDeep-Large":
             model_name = "klue/roberta-large"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = RoBERTaRegressorDeep(

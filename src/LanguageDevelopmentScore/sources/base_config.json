@@ -13,7 +13,7 @@
     "is_freeze": true,
     "sigmoid_scaling": false,
     "pooling_method":"mean",
-    "scheduler": "exponentiallr",
+    "scheduler": "reducelronplateau",
     "seed": 917,
     "epochs": 100,
     "learning_rate": 0.0005,
