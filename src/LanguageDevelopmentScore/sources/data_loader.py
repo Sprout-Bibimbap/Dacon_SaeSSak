@@ -82,6 +82,8 @@ def get_loader(config, tokenizer):
 
 def data_preprocessing(data, config):
     data_config = config["data"]
+    subset_columns = [data_config["output"]] + data_config["input"]
+    data = data.drop_duplicates(subset=subset_columns)
     if data_config["balancing"]:
         print("**APPLYING LABEL BALANCING FOR IMBALANCED DATA**")
         label_counts = data[data_config["output"]].value_counts()
@@ -109,7 +111,6 @@ def data_preprocessing(data, config):
         )  # MIN-MAX SCALING
     else:
         data[data_config["output"]] = data[data_config["output"]] * 10
-
     print("──────────────────────────────────────────────────────────────────")
     print(" Data Counts:")
     for label in sorted(data[data_config["output"]].unique()):

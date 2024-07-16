@@ -177,7 +177,7 @@ def get_scheduler(config, optimizer):
         factor = 0.1
         patience = 6
         verbose = True
-        threshold = (0.05,)
+        threshold = 0.05
         threshold_mode = "abs"
         scheduler = ReduceLROnPlateau(
             optimizer,
