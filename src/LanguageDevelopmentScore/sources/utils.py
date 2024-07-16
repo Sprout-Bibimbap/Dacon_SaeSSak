@@ -189,7 +189,7 @@ def get_scheduler(config, optimizer):
             verbose=verbose,
         )
         print(
-            f"Initialized ReduceLROnPlateau with mode={mode}, factor={factor}, patience={patience}, verbose={verbose}"
+            f"Initialized ReduceLROnPlateau with mode={mode}, factor={factor}, patience={patience}, threshold={threshold}, threshold_mode={threshold_mode}, verbose={verbose}"
         )
 
     elif scheduler_type == "cosineannealinglr":
