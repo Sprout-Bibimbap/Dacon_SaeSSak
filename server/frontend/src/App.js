@@ -19,20 +19,22 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={
-            isLoggedIn ? <Navigate to="/chat" replace /> : <Login onLogin={handleLogin} />
-          } />
-          <Route 
-            path="/chat" 
-            element={isLoggedIn ? <ChatBot onLogout={handleLogout} /> : <Navigate to="/" replace />} 
-          />
-          <Route 
-            path="/report" 
-            element={isLoggedIn ? <Report onLogout={handleLogout} /> : <Navigate to="/" replace />} 
-          />
-        </Routes>
+      <div className="min-h-screen flex justify-center bg-gray-100">
+        <div className="w-full max-w-3xl bg-white shadow-lg">  {/* 여기서 최대 너비를 제어합니다 */}
+          <Routes>
+            <Route path="/" element={
+              isLoggedIn ? <Navigate to="/chat" replace /> : <Login onLogin={handleLogin} />
+            } />
+            <Route 
+              path="/chat" 
+              element={isLoggedIn ? <ChatBot onLogout={handleLogout} /> : <Navigate to="/" replace />} 
+            />
+            <Route 
+              path="/report" 
+              element={isLoggedIn ? <Report onLogout={handleLogout} /> : <Navigate to="/" replace />} 
+            />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
