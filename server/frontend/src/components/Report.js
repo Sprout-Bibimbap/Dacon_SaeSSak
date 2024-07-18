@@ -100,8 +100,8 @@ function Report({ userName = "새싹" }) {
         setTimeout(() => {
           resolve({
             title: "발달장애 위험",
-            siren: "yellow", // "red", "yellow", "green" 중 하나
-            aiText: "현재 중간 수준의 발달 위험이 감지되었습니다. 주의 깊은 관찰이 필요합니다."
+            siren: "안전", 
+            aiText: "현재 발달 위험이 감지되지 않고 있습니다. 잘하고 계시니 더 많은 사랑을 주세요!"
           });
         }, 1000);
       });
