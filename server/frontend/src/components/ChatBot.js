@@ -6,6 +6,7 @@ import ErrorMessage from './ErrorMessage';
 import { useOpenAITTS } from '../hooks/tts.js';
 import { useAudioRecorder } from '../hooks/useAudioRecorder.js';
 import '../App.css';
+import './ChatBot.css';
 
 const STT_URL = process.env.REACT_APP_STT_URL || 'http://localhost:8000/api/v1/response/stt';
 
