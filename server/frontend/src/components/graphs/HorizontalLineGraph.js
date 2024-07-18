@@ -14,10 +14,8 @@ const HorizontalLineGraph = ({ title, data }) => {
   const rightShift = 50;
 
   return (
-    <div className="relative border-2 border-gray-300 rounded-lg p-2 pt-6 mb-4">
-      <h2 className="absolute top-[1px] -translate-y-[calc(50%+25px)] bg-white px-2 text-2xl font-bold">
-        {title}
-      </h2>
+    <div className="component-container">
+      <h2 className="component-title">{title}</h2>
       <svg viewBox="0 0 650 150" preserveAspectRatio="xMidYMid meet" className="w-full h-auto mt-2">
         {['하', '중', '상'].map((label, index) => (
           <g key={label}>

@@ -1,12 +1,17 @@
 import React from 'react';
 import { ReactComponent as BrainSVG } from '../img/brain.svg';
 
-const BrainMap = ({ brainAreas, brainData, textPositionAdjust = { x: 0, y: 0 }, fontSizeAdjust = '12px', userName = "새싹" }) => {
+const BrainMap = ({ 
+  brainAreas, 
+  brainData, 
+  textPositionAdjust = { x: 0, y: 0 }, 
+  fontSizeAdjust = '12px', 
+  userName = "새싹",
+  title = "관심 주제"  // 새로 추가된 prop, 기본값 설정
+}) => {
   return (
-    <div className="relative border-2 border-gray-300 rounded-lg p-4 pt-8 pb-12 mb-8">
-      <h2 className="absolute top-[1px] -translate-y-[calc(50%+25px)] bg-white px-2 text-2xl font-bold">
-        관심 주제
-      </h2>
+    <div className="component-container relative p-4 pt-8 pb-12 mb-8">
+      <h2 className="component-title">{title}</h2>
       <div className="relative w-full max-w-md mx-auto">
         <BrainSVG className="w-full h-auto" />
         <div className="absolute inset-0">

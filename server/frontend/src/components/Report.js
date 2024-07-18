@@ -4,6 +4,8 @@ import BrainMap from './graphs/BrainMap';
 import GraphComponent from './graphs/GraphComponent';
 import HorizontalLineGraph from './graphs/HorizontalLineGraph';
 import AttachmentRelationship from './graphs/AttachmentRelationship';
+import Emergency from './graphs/Emergency';
+import "../index.css";
 
 function Report({ userName = "새싹" }) {
   // 말하기 성장표(API)
@@ -18,11 +20,11 @@ function Report({ userName = "새싹" }) {
     { name: '24.06.11', value: 2.5 },
     { name: '24.08.20', value: 2.6 },
     { name: '24.10.12', value: 2.8 },
-    { name: '24.10.12', value: 3.2 },
+    { name: '24.11.15', value: 3.2 },
   ];
 
   // 창의·잠재력지수(API)
-  const HorizontalGraphData1 = [
+  const horizontalGraphData1 = [
     { name: '집중력', value: '상' },
     { name: '어휘력', value: '상' },
     { name: '논리력', value: '하' },
@@ -36,13 +38,34 @@ function Report({ userName = "새싹" }) {
 
   // 현재 날짜
   const currentDate = new Date();
-  const year = currentDate.getFullYear()
+  const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;  
   const day = currentDate.getDate();
 
   // 애착 관계(API)
   const [humanText, setHumanText] = useState('');
   const [aiText, setAiText] = useState('');
+
+  // 관심 주제(API)
+  const brainAreas = [
+    { id: 1, x: 250, y: 100 },
+    { id: 2, x: 130, y: 120 },
+    { id: 3, x: 330, y: 160 },
+    { id: 4, x: 120, y: 185 },
+    { id: 5, x: 230, y: 180 },
+    { id: 6, x: 335, y: 225 },
+    { id: 7, x: 230, y: 250 },
+    { id: 8, x: 315, y: 280 },
+    { id: 9, x: 240, y: 285 },
+  ];
+  const [brainData, setBrainData] = useState([]);
+
+  // 발달장애 위험(API)
+  const [emergencyData, setEmergencyData] = useState({
+    title: "",
+    siren: "",
+    aiText: ""
+  });
 
   useEffect(() => {
     const fetchAttachmentData = async () => {
@@ -63,32 +86,31 @@ function Report({ userName = "새싹" }) {
       setAiText(aiTextData);
     };
 
-    fetchAttachmentData();
-  }, []);
-
-  // 관심 주제(API)
-  const brainAreas = [
-    { id: 1, x: 250, y: 100 },
-    { id: 2, x: 130, y: 120 },
-    { id: 3, x: 330, y: 160 },
-    { id: 4, x: 120, y: 185 },
-    { id: 5, x: 230, y: 180 },
-    { id: 6, x: 335, y: 225 },
-    { id: 7, x: 230, y: 250 },
-    { id: 8, x: 315, y: 280 },
-    { id: 9, x: 240, y: 285 },
-  ];
-  const [brainData, setBrainData] = useState([]);
-
-  useEffect(() => {
-    const mockApiCall = () => {
-      return new Promise((resolve) => {
+    const fetchBrainData = async () => {
+      const response = await new Promise((resolve) => {
         setTimeout(() => {
           resolve(["사랑", "아빠", "엄마", "소방차", "밥", "타요", "도티", "고기", "치킨"]);
         }, 1000);
       });
+      setBrainData(response);
     };
-    mockApiCall().then(data => setBrainData(data));
+
+    const fetchEmergencyData = async () => {
+      const response = await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            title: "발달장애 위험",
+            siren: "yellow", // "red", "yellow", "green" 중 하나
+            aiText: "현재 중간 수준의 발달 위험이 감지되었습니다. 주의 깊은 관찰이 필요합니다."
+          });
+        }, 1000);
+      });
+      setEmergencyData(response);
+    };
+
+    fetchAttachmentData();
+    fetchBrainData();
+    fetchEmergencyData();
   }, []);
 
   return (
@@ -124,7 +146,7 @@ function Report({ userName = "새싹" }) {
 
         <HorizontalLineGraph 
           title="창의·잠재력지수" 
-          data={HorizontalGraphData1}
+          data={horizontalGraphData1}
         />
 
         <HorizontalLineGraph 
@@ -139,6 +161,12 @@ function Report({ userName = "새싹" }) {
         />
 
         <BrainMap brainAreas={brainAreas} brainData={brainData} />
+
+        <Emergency
+          title={emergencyData.title}
+          siren={emergencyData.siren}
+          aiText={emergencyData.aiText}
+        />
       </div>
     </div>
   );

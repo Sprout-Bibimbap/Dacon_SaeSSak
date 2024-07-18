@@ -2,10 +2,8 @@ import React from 'react';
 
 const AttachmentRelationship = ({ title, humanText, aiText }) => {
   return (
-    <div className="relative border-2 border-gray-300 rounded-lg p-5 pt-6 mb-6">
-      <h2 className="absolute top-[1px] -translate-y-[calc(50%+25px)] bg-white px-2 text-2xl font-bold">
-        {title}
-      </h2>
+    <div className="component-container">
+      <h2 className="component-title">{title}</h2>
       <div className="space-y-6 mt-4">
         {/* 사람 말풍선 */}
         <div className="flex items-start">
