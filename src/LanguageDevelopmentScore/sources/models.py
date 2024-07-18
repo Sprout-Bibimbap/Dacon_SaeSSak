@@ -286,8 +286,9 @@ class RoBERTaRegressorDeep(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         token_embeddings = outputs.last_hidden_state
-
-        if "mean" in self.pooling:
+        if "cls" in self.pooling:
+            one_embedding = token_embeddings[:, 0, :]
+        elif "mean" in self.pooling:
             one_embedding = self.mean_pooling(token_embeddings, attention_mask)
         elif "max" in self.pooling:
             one_embedding = self.max_pooling(token_embeddings, attention_mask)
@@ -342,8 +343,6 @@ class RoBERTaRegressorDeep0718(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         token_embeddings = outputs.last_hidden_state
-        if "cls" in self.pooling:
-            one_embedding = token_embeddings[:, 0, :]
         if "mean" in self.pooling:
             one_embedding = self.mean_pooling(token_embeddings, attention_mask)
         elif "max" in self.pooling:
