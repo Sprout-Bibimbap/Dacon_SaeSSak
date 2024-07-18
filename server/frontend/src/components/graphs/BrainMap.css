@@ -1,0 +1,91 @@
+.brain-map-container {
+  background: linear-gradient(to bottom right, #f6f9fc, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.brain-map-container:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.brain-maps-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brain-map-content {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.brain-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.brain-areas {
+  position: absolute;
+  inset: 0;
+}
+
+.brain-area-text {
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.brain-area-text:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.brain-map-subtitle {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.brain-area-text {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@media (max-width: 1024px) {
+  .brain-maps-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .brain-map-content {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .brain-map-container {
+    padding: 15px;
+  }
+
+  .brain-map-subtitle {
+    font-size: 1rem;
+  }
+}

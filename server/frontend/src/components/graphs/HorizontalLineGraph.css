@@ -1,0 +1,84 @@
+.horizontal-line-graph {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: linear-gradient(to right, #f6f9fc, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.graph-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.item-label {
+  flex: 0 0 100px;
+  font-weight: bold;
+  color: #333;
+}
+
+.bar-container {
+  flex: 1;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 15px;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease-out;
+}
+
+.item-value {
+  flex: 0 0 30px;
+  text-align: right;
+  font-weight: bold;
+}
+
+@keyframes barAnimation {
+  0% {
+    width: 0;
+  }
+}
+
+.bar {
+  animation: barAnimation 1s ease-out;
+}
+
+@media (max-width: 600px) {
+  .item-label {
+    flex: 0 0 80px;
+  }
+  
+  .bar-container {
+    margin: 0 10px;
+  }
+}
+
+/* Hover effect */
+.graph-item:hover .bar {
+  filter: brightness(1.1);
+}
+
+/* Extra styling for specific values */
+.item-value {
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+}
+
+.item-value:nth-child(3n+1) {
+  background-color: #4CAF50;
+}
+
+.item-value:nth-child(3n+2) {
+  background-color: #FFC107;
+}
+
+.item-value:nth-child(3n+3) {
+  background-color: #F44336;
+}

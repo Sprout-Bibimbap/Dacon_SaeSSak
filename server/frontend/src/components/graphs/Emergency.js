@@ -2,11 +2,9 @@ import React from 'react';
 import yellowSiren from '../img/yellow.svg';
 import redSiren from '../img/red.svg';
 import greenSiren from '../img/green.svg';
+import './Emergency.css';
 
-
-
-const SirenStatus = ({ title, siren, aiText }) => {
-
+const SirenStatus = ({ siren, aiText }) => {
   const sirenImages = {
     '위험': redSiren,
     '주의': yellowSiren,
@@ -14,35 +12,33 @@ const SirenStatus = ({ title, siren, aiText }) => {
   };
 
   const sirenColorClasses = {
-    '위험': 'red',
-    '주의': 'yellow',
-    '안전': 'green'
+    '위험': 'siren-status__indicator--red',
+    '주의': 'siren-status__indicator--yellow',
+    '안전': 'siren-status__indicator--green'
   };
 
   return (
-    <div className="component-container">
-      <h2 className="component-title">{title}</h2>
-      
-      <div className="flex justify-between">
-        <div className="flex-grow flex justify-center items-center">
+    <div className="siren-status">
+      <div className="siren-status__content">
+        <div className="siren-status__image-container">
           <img 
             src={sirenImages[siren]} 
             alt={`${siren} 상태`} 
-            className="w-50 h-50"
+            className="siren-status__image"
           />
         </div>
         
-        <div className="flex flex-col items-start space-y-2">
-          {Object.entries(sirenColorClasses).map(([key, color]) => (
-            <div key={key} className="flex items-center">
-              <div className={`w-4 h-4 rounded-full bg-${color}-500 mr-2`}></div>
-              <span>{key}</span>
+        <div className="siren-status__legend">
+          {Object.entries(sirenColorClasses).map(([key, colorClass]) => (
+            <div key={key} className="siren-status__legend-item">
+              <div className={`siren-status__indicator ${colorClass}`}></div>
+              <span className="siren-status__legend-text">{key}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="text-center p-2 bg-gray-100 rounded mt-4">
+      <div className="siren-status__ai-text">
         <p>{aiText || '데이터를 불러오는 중입니다...'}</p>
       </div>
     </div>

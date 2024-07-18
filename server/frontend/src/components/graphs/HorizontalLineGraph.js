@@ -1,66 +1,37 @@
 import React from 'react';
+import './HorizontalLineGraph.css';
 
-const HorizontalLineGraph = ({ title, data }) => {
-  const getPositionForValue = (value) => {
-    switch (value) {
-      case '하': return 100;
-      case '중': return 300;
-      case '상': return 500;
-      default: return 300;
+const HorizontalLineGraph = ({ data }) => {
+  const getBarColor = (value) => {
+    switch(value.toLowerCase()) {
+      case '상':
+        return '#4CAF50';
+      case '중':
+        return '#FFC107';
+      case '하':
+        return '#F44336';
+      default:
+        return '#9E9E9E';
     }
   };
 
-  // 오른쪽으로 이동할 거리를 정의합니다 (예: 50px)
-  const rightShift = 50;
-
   return (
-    <div className="component-container">
-      <h2 className="component-title">{title}</h2>
-      <svg viewBox="0 0 650 150" preserveAspectRatio="xMidYMid meet" className="w-full h-auto mt-2">
-        {['하', '중', '상'].map((label, index) => (
-          <g key={label}>
-            <text x={100 + rightShift + index * 200} y="20" textAnchor="middle" fontSize="14" fill="#666">{label}</text>
-            <line
-              x1={100 + rightShift + index * 200}
-              y1="30"
-              x2={100 + rightShift + index * 200}
-              y2={30 + data.length * 40}
-              stroke="#ccc"
-              strokeWidth="1"
-              strokeDasharray="5,5"
-            />
-          </g>
-        ))}
-
-        {data.map((item, index) => (
-          <g key={item.name}>
-            <line
-              x1={100 + rightShift}
-              y1={40 + index * 40}
-              x2={500 + rightShift}
-              y2={40 + index * 40}
-              stroke="#e0e0e0"
-              strokeWidth="2"
-            />
-            <circle
-              cx={getPositionForValue(item.value) + rightShift}
-              cy={40 + index * 40}
-              r="6"
-              fill="green"
-            />
-            <text
-              x={80 + rightShift}
-              y={45 + index * 40}
-              textAnchor="end"
-              fontSize="16"
-              fontWeight="bold"
-              fill="#333"
-            >
-              {item.name}
-            </text>
-          </g>
-        ))}
-      </svg>
+    <div className="horizontal-line-graph">
+      {data.map((item, index) => (
+        <div key={index} className="graph-item">
+          <div className="item-label">{item.name}</div>
+          <div className="bar-container">
+            <div 
+              className="bar" 
+              style={{
+                width: item.value === '상' ? '100%' : (item.value === '중' ? '66%' : '33%'),
+                backgroundColor: getBarColor(item.value)
+              }}
+            ></div>
+          </div>
+          <div className="item-value">{item.value}</div>
+        </div>
+      ))}
     </div>
   );
 };

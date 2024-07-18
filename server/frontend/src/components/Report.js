@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Title from './graphs/Title'; 
 import BrainMap from './graphs/BrainMap';
 import GraphComponent from './graphs/GraphComponent';
 import HorizontalLineGraph from './graphs/HorizontalLineGraph';
 import AttachmentRelationship from './graphs/AttachmentRelationship';
 import Emergency from './graphs/Emergency';
 import "../index.css";
+import "./Report.css";
 
 function Report({ userName = "새싹" }) {
   // 말하기 성장표(API)
@@ -48,17 +50,16 @@ function Report({ userName = "새싹" }) {
 
   // 관심 주제(API)
   const brainAreas = [
-    { id: 1, x: 250, y: 100 },
-    { id: 2, x: 130, y: 120 },
-    { id: 3, x: 330, y: 160 },
-    { id: 4, x: 120, y: 185 },
-    { id: 5, x: 230, y: 180 },
-    { id: 6, x: 335, y: 225 },
-    { id: 7, x: 230, y: 250 },
-    { id: 8, x: 315, y: 280 },
-    { id: 9, x: 240, y: 285 },
+    { id: 1, x: 250, y: 150 },
+    { id: 2, x: 140, y: 100 },
+    { id: 3, x: 360, y: 160 },
+    { id: 4, x: 120, y: 160 },
+    { id: 5, x: 270, y: 70 },
+    { id: 6, x: 350, y: 260 },
+    { id: 7, x: 260, y: 250 },
   ];
-  const [brainData, setBrainData] = useState([]);
+  const [userBrainData, setUserBrainData] = useState([]);
+  const [otherUsersBrainData, setOtherUsersBrainData] = useState([]);
 
   // 발달장애 위험(API)
   const [emergencyData, setEmergencyData] = useState({
@@ -87,12 +88,19 @@ function Report({ userName = "새싹" }) {
     };
 
     const fetchBrainData = async () => {
-      const response = await new Promise((resolve) => {
+      const userResponse = await new Promise((resolve) => {
         setTimeout(() => {
-          resolve(["사랑", "아빠", "엄마", "소방차", "밥", "타요", "도티", "고기", "치킨"]);
+          resolve(["사랑", "아빠", "엄마", "소방차", "밥", "타요", "도티"]);
         }, 1000);
       });
-      setBrainData(response);
+      setUserBrainData(userResponse);
+
+      const otherUsersResponse = await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(["가족", "놀이", "친구", "음식", "동물", "자동차", "책"]);
+        }, 1000);
+      });
+      setOtherUsersBrainData(otherUsersResponse);
     };
 
     const fetchEmergencyData = async () => {
@@ -138,35 +146,54 @@ function Report({ userName = "새싹" }) {
       </nav>
       
       <div className="space-y-8">
-        <GraphComponent 
-          title="말하기 성장표" 
-          data={graphData} 
-          color="#4CAF50"
-        />
+        <div>
+            <Title>말하기 성장표</Title>
+            <GraphComponent 
+              data={graphData} 
+              color="#4CAF50"
+            />
+        </div>
 
-        <HorizontalLineGraph 
-          title="창의·잠재력지수" 
-          data={horizontalGraphData1}
-        />
+        <div>
+          <Title>창의·잠재력지수</Title>
+          <HorizontalLineGraph 
+            data={horizontalGraphData1}
+          />
+        </div>
 
-        <HorizontalLineGraph 
-          title="마음성장지수" 
-          data={horizontalGraphData2}
-        />
+        <div>
+          <Title>마음성장지수</Title>
+          <HorizontalLineGraph 
+            data={horizontalGraphData2}
+          />
+        </div>
 
-        <AttachmentRelationship
-          title="애착 관계"
-          humanText={humanText}
-          aiText={aiText}
-        />
+        <div>
+          <Title>애착 관계</Title>
+          <AttachmentRelationship
+            humanText={humanText}
+            aiText={aiText}
+          />
+        </div>
 
-        <BrainMap brainAreas={brainAreas} brainData={brainData} />
+        <div>
+          <Title>관심 주제</Title>
+          <BrainMap
+            brainAreas={brainAreas}
+            userBrainData={userBrainData}
+            otherUsersBrainData={otherUsersBrainData}
+            fontSizeAdjusts={['14px', '12px', '16px', '13px', '15px', '12px', '14px']}
+            userName={userName}
+          />
+        </div>
 
-        <Emergency
-          title={emergencyData.title}
-          siren={emergencyData.siren}
-          aiText={emergencyData.aiText}
-        />
+        <div>
+          <Title>발달장애 위험</Title>
+          <Emergency
+            siren={emergencyData.siren}
+            aiText={emergencyData.aiText}
+          />
+        </div>
       </div>
     </div>
   );
