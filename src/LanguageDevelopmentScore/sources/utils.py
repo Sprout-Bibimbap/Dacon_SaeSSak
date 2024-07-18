@@ -185,7 +185,7 @@ def get_scheduler(config, optimizer):
         # factor: 학습률 감소율
         # patience: 몇 에폭 동안 개선이 없을 때 학습률을 감소시킬지
         mode = "min"
-        factor = 0.1
+        factor = 0.5
         patience = 6
         verbose = True
         threshold = 0.05

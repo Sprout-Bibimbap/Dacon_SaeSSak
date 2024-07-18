@@ -209,6 +209,104 @@ class RoBERTaRegressorDeep(nn.Module):
         self.bert = AutoModel.from_pretrained(model_name)
         self.attention_pooling = AttentionLayer(
             hidden_size=self.bert.config.hidden_size
+        )
+
+        self.fc1 = nn.Linear(self.bert.config.hidden_size, 1024)
+        self.bn1 = nn.BatchNorm1d(1024)
+
+        self.fc2 = nn.Linear(1024, 512)
+        self.bn2 = nn.BatchNorm1d(512)
+
+        self.fc3 = nn.Linear(512, 256)
+        self.bn3 = nn.BatchNorm1d(256)
+
+        self.fc4 = nn.Linear(256, 128)
+        self.bn4 = nn.BatchNorm1d(128)
+
+        self.fc5 = nn.Linear(128, 64)
+        self.bn5 = nn.BatchNorm1d(64)
+
+        self.fc6 = nn.Linear(64, 32)
+        self.bn6 = nn.BatchNorm1d(32)
+
+        self.regressor = nn.Linear(32, 1)
+
+        self.activation = nn.GELU()
+        self.dropout = nn.Dropout(0.3)
+
+        self.sigmoid_scaling = is_sigmoid
+        self.pooling = re.sub(r"\W+", "", pooling).lower()
+        if is_freeze:
+            print("**PRETRAINED MODEL FREEZE**")
+            for param in self.bert.parameters():
+                param.requires_grad = False
+
+        self.fc_layers = nn.Sequential(
+            self.fc1,
+            self.bn1,
+            self.activation,
+            self.dropout,
+            self.fc2,
+            self.bn2,
+            self.activation,
+            self.dropout,
+            self.fc3,
+            self.bn3,
+            self.activation,
+            self.dropout,
+            self.fc4,
+            self.bn4,
+            self.activation,
+            self.dropout,
+            self.fc5,
+            self.bn5,
+            self.activation,
+            self.dropout,
+            self.fc6,
+            self.bn6,
+            self.activation,
+            self.dropout,
+            self.regressor,
+        )
+
+    def mean_pooling(self, token_embeddings, attention_mask):
+        input_mask_expanded = (
+            attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        )
+        sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
+        sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+        return sum_embeddings / sum_mask
+
+    def max_pooling(self, token_embeddings, attention_mask):
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand_as(token_embeddings)
+        token_embeddings[input_mask_expanded == 0] = float("-inf")
+        max_pooled = torch.max(token_embeddings, dim=1)[0]
+        return max_pooled
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
+        token_embeddings = outputs.last_hidden_state
+
+        if "mean" in self.pooling:
+            one_embedding = self.mean_pooling(token_embeddings, attention_mask)
+        elif "max" in self.pooling:
+            one_embedding = self.max_pooling(token_embeddings, attention_mask)
+        elif "attention" in self.pooling:
+            one_embedding = self.attention_pooling(token_embeddings, attention_mask)
+
+        x = self.fc_layers(one_embedding)
+
+        if self.sigmoid_scaling:
+            x = torch.sigmoid(x)
+        return x.squeeze()
+
+
+class RoBERTaRegressorDeep0718(nn.Module):
+    def __init__(self, model_name, is_freeze=False, is_sigmoid=False, pooling="mean"):
+        super(RoBERTaRegressorDeep0718, self).__init__()
+        self.bert = AutoModel.from_pretrained(model_name)
+        self.attention_pooling = AttentionLayer(
+            hidden_size=self.bert.config.hidden_size
         )  # BERT hidden size
         self.fc1 = nn.Linear(self.bert.config.hidden_size, 1024)
         self.fc2 = nn.Linear(1024, 512)
@@ -235,7 +333,7 @@ class RoBERTaRegressorDeep(nn.Module):
         sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
         return sum_embeddings / sum_mask
 
-    def max_pooling(token_embeddings, attention_mask):
+    def max_pooling(self, token_embeddings, attention_mask):
         input_mask_expanded = attention_mask.unsqueeze(-1).expand_as(token_embeddings)
         token_embeddings[input_mask_expanded == 0] = float("-inf")
         max_pooled = torch.max(token_embeddings, dim=1)[0]
@@ -244,6 +342,8 @@ class RoBERTaRegressorDeep(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         token_embeddings = outputs.last_hidden_state
+        if "cls" in self.pooling:
+            one_embedding = token_embeddings[:, 0, :]
         if "mean" in self.pooling:
             one_embedding = self.mean_pooling(token_embeddings, attention_mask)
         elif "max" in self.pooling:
