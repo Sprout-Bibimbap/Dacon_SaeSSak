@@ -1,7 +1,7 @@
-import json
 import os
 from transformers import AutoTokenizer
 from sources.models import (
+    BERTRegressorDeep,
     sBERTRegressor,
     sBERTRegressorNew,
     RoBERTaRegressor,
@@ -37,7 +37,9 @@ def seed_everything(seed):
 def model_identification(args):
     model_name = args.config["model"]
     cleaned_model_name = re.sub(r"\W+", "", model_name).lower()
-    if cleaned_model_name == "sbert":
+    if cleaned_model_name == "bert":
+        return "BERT", ""
+    elif cleaned_model_name == "sbert":
         return "sBERT", ""
     elif cleaned_model_name == "sbertnew":
         return "sBERTNew", ""
@@ -60,7 +62,16 @@ def model_identification(args):
 
 
 def get_model_tokenizer(args):
-    if args.model == "sBERT":
+    if args.model == "BERT":
+        model_name = "skt/kobert-base-v1"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = BERTRegressorDeep(
+            model_name,
+            args.config["is_freeze"],
+            args.config["sigmoid_scaling"],
+            args.config["pooling_method"],
+        )
+    elif args.model == "sBERT":
         model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = sBERTRegressor(model_name, args.config["is_freeze"])
