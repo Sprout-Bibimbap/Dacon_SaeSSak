@@ -7,7 +7,7 @@ const GraphComponent = ({ title, data, color }) => {
 
   return (
     <div className="relative border-2 border-gray-300 rounded-lg p-4 pt-8 mb-4">
-      <h2 className="absolute top-0 left-4 -translate-y-1/2 bg-white px-2 text-2xl font-bold">
+      <h2 className="absolute top-[1px] -translate-y-[calc(50%+25px)] bg-white px-2 text-2xl font-bold">
         {title}
       </h2>
       <ResponsiveContainer width="100%" height={300}>

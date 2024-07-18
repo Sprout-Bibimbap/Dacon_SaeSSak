@@ -4,7 +4,7 @@ import { ReactComponent as BrainSVG } from '../img/brain.svg';
 const BrainMap = ({ brainAreas, brainData, textPositionAdjust = { x: 0, y: 0 }, fontSizeAdjust = '12px', userName = "새싹" }) => {
   return (
     <div className="relative border-2 border-gray-300 rounded-lg p-4 pt-8 pb-12 mb-8">
-      <h2 className="absolute top-0 left-4 -translate-y-1/2 bg-white px-2 text-2xl font-bold">
+      <h2 className="absolute top-[1px] -translate-y-[calc(50%+25px)] bg-white px-2 text-2xl font-bold">
         관심 주제
       </h2>
       <div className="relative w-full max-w-md mx-auto">
