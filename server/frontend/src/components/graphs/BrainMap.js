@@ -1,48 +1,37 @@
 import React from 'react';
-import { ReactComponent as BrainSVG } from '../img/brain2.svg';
+import BrainMapWithText from './BrainMapWithText';
 import './BrainMap.css';
 
 const BrainMap = ({ 
-  brainAreas, 
+  userBrainAreas,
+  otherUsersBrainAreas,
   userBrainData,
   otherUsersBrainData,
-  textPositionAdjust = { x: 0, y: 0 }, 
   fontSizeAdjusts = Array(7).fill('12px'), 
+  textRotations = Array(7).fill(0),
   userName = "새싹"
 }) => {
-  const renderBrain = (brainData, subtitle) => (
-    <div className="brain-map-content">
-      <BrainSVG className="brain-svg" />
-      <div className="brain-areas">
-        {brainData.map((text, index) => {
-          const area = brainAreas[index];
-          if (!area) return null;
-          return (
-            <div
-              key={area.id}
-              className="brain-area-text"
-              style={{
-                left: `${area.x + textPositionAdjust.x}px`,
-                top: `${area.y + textPositionAdjust.y}px`,
-                fontSize: fontSizeAdjusts[index]
-              }}
-            >
-              {text}
-            </div>
-          );
-        })}
-      </div>
-      <h3 className="brain-map-subtitle">
-        {subtitle}
-      </h3>
-    </div>
-  );
-
   return (
     <div className="brain-map-container">
       <div className="brain-maps-wrapper">
-        {renderBrain(userBrainData, `${userName}이의 두뇌 탐험`)}
-        {renderBrain(otherUsersBrainData, '비슷한 사용자들의 두뇌 탐험')}
+        <div>
+          <BrainMapWithText
+            brainAreas={userBrainAreas}
+            brainData={userBrainData}
+            fontSizeAdjusts={fontSizeAdjusts}
+            textRotations={textRotations}
+          />
+          <h3 className="brain-map-subtitle">{`${userName}이의 두뇌 탐험`}</h3>
+        </div>
+        <div>
+          <BrainMapWithText
+            brainAreas={otherUsersBrainAreas}
+            brainData={otherUsersBrainData}
+            fontSizeAdjusts={fontSizeAdjusts}
+            textRotations={textRotations}
+          />
+          <h3 className="brain-map-subtitle">비슷한 사용자들의 두뇌 탐험</h3>
+        </div>
       </div>
     </div>
   );

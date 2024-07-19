@@ -49,14 +49,24 @@ function Report({ userName = "새싹" }) {
   const [aiText, setAiText] = useState('');
 
   // 관심 주제(API)
-  const brainAreas = [
-    { id: 1, x: 250, y: 150 },
-    { id: 2, x: 140, y: 100 },
-    { id: 3, x: 360, y: 160 },
-    { id: 4, x: 120, y: 160 },
-    { id: 5, x: 270, y: 70 },
-    { id: 6, x: 350, y: 260 },
-    { id: 7, x: 260, y: 250 },
+  const userBrainAreas = [
+    { id: 1, x: 35, y: 21 },  
+    { id: 2, x: 21, y: 135 },  
+    { id: 3, x: 5, y: 22 },  
+    { id: 4, x: 19, y: 22 },  
+    { id: 5, x: 39, y: 95 },      
+    { id: 6, x: 475, y: 36 },  
+    { id: 7, x: 36, y: 34 },  
+  ];
+
+  const otherUsersBrainAreas = [
+    { id: 1, x: 350, y: 210 },  
+    { id: 2, x: 210, y: 135 },  
+    { id: 3, x: 500, y: 220 },  
+    { id: 4, x: 190, y: 220 },  
+    { id: 5, x: 390, y: 95 },      
+    { id: 6, x: 475, y: 360 },  
+    { id: 7, x: 360, y: 340 },  
   ];
   const [userBrainData, setUserBrainData] = useState([]);
   const [otherUsersBrainData, setOtherUsersBrainData] = useState([]);
@@ -179,7 +189,8 @@ function Report({ userName = "새싹" }) {
         <div>
           <Title>관심 주제</Title>
           <BrainMap
-            brainAreas={brainAreas}
+            userBrainAreas={userBrainAreas}
+            otherUsersBrainAreas={otherUsersBrainAreas}
             userBrainData={userBrainData}
             otherUsersBrainData={otherUsersBrainData}
             fontSizeAdjusts={['14px', '12px', '16px', '13px', '15px', '12px', '14px']}
