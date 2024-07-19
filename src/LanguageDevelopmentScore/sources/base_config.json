@@ -1,5 +1,5 @@
 {
-    "model": "robertadeep-large",
+    "model": "bert",
     "data": {
         "balancing": false,
         "repo_id": "SaeSSak/Conversation",
@@ -12,13 +12,13 @@
     "valid_size":0.2,
     "is_freeze": true,
     "sigmoid_scaling": false,
-    "pooling_method":"cls",
+    "pooling_method":"attention",
     "scheduler": "reducelronplateau",
     "seed": 917,
     "epochs": 100,
     "learning_rate": 0.001,
     "criterion": "rmse",
     "optimizer": "adamw",
-    "batch_size": 64,
+    "batch_size": 256,
     "save_interval": 5
 }

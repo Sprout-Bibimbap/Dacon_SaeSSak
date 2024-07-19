@@ -455,18 +455,33 @@ class RoBERTaRegressor0709(nn.Module):
 #         return regression_output.squeeze()
 
 
+# class AttentionLayer(nn.Module):
+#     def __init__(self, hidden_size):
+#         super(AttentionLayer, self).__init__()
+#         self.attention_weights = nn.Parameter(torch.randn(hidden_size, 1))
+
+#     def forward(self, token_embeddings, attention_mask):
+#         attention_scores = torch.matmul(
+#             token_embeddings, self.attention_weights
+#         ).squeeze(-1)
+#         attention_scores = attention_scores.masked_fill(attention_mask == 0, -1e9)
+#         attention_weights = F.softmax(attention_scores, dim=1)
+
+#         weighted_sum = torch.matmul(
+#             attention_weights.unsqueeze(1), token_embeddings
+#         ).squeeze(1)
+#         return weighted_sum
+
+
 class AttentionLayer(nn.Module):
     def __init__(self, hidden_size):
         super(AttentionLayer, self).__init__()
-        self.attention_weights = nn.Parameter(torch.randn(hidden_size, 1))
+        self.attention_weights = nn.Linear(hidden_size, 1)
 
     def forward(self, token_embeddings, attention_mask):
-        attention_scores = torch.matmul(
-            token_embeddings, self.attention_weights
-        ).squeeze(-1)
+        attention_scores = self.attention_weights(token_embeddings).squeeze(-1)
         attention_scores = attention_scores.masked_fill(attention_mask == 0, -1e9)
         attention_weights = F.softmax(attention_scores, dim=1)
-
         weighted_sum = torch.matmul(
             attention_weights.unsqueeze(1), token_embeddings
         ).squeeze(1)
