@@ -27,7 +27,7 @@
 }
 
 .siren-status__image {
-  max-width: 100px;
+  max-width: 250px;
   height: auto;
   transition: all 0.3s ease;
 }

@@ -16,3 +16,7 @@ body {
 .recording-indicator.active {
   color: #ff4136;
 }
+
+body, #root, .App {
+  background-color: #739CBF !important;
+}

@@ -3,8 +3,9 @@
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   transition: all 0.3s ease;
+  max-width: 1200px;
 }
 
 .brain-map-container:hover {
@@ -24,9 +25,13 @@
   max-width: 400px;
 }
 
-.brain-svg {
+.brain-svg,
+.brain-map img {
   width: 100%;
   height: auto;
+}
+
+.brain-svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -39,11 +44,11 @@
   position: absolute;
   text-align: center;
   transform: translate(-50%, -50%);
-  background-color: transparent; /* 배경색 제거 */
   padding: 2px 6px;
   border-radius: 10px;
   transition: all 0.2s ease;
-  white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 함 */
+  white-space: nowrap;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 .brain-area-text:hover {
@@ -61,10 +66,6 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.brain-area-text {
-  animation: fadeIn 0.5s ease-out forwards;
 }
 
 @media (max-width: 1024px) {

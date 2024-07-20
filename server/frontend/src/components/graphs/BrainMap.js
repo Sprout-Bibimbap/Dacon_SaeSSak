@@ -14,22 +14,26 @@ const BrainMap = ({
   return (
     <div className="brain-map-container">
       <div className="brain-maps-wrapper">
-        <div>
-          <BrainMapWithText
-            brainAreas={userBrainAreas}
-            brainData={userBrainData}
-            fontSizeAdjusts={fontSizeAdjusts}
-            textRotations={textRotations}
-          />
+        <div className="brain-map">
+          <div className="brain-map-content">
+            <BrainMapWithText
+              brainAreas={userBrainAreas}
+              brainData={userBrainData}
+              fontSizeAdjusts={fontSizeAdjusts}
+              textRotations={textRotations}
+            />
+          </div>
           <h3 className="brain-map-subtitle">{`${userName}이의 두뇌 탐험`}</h3>
         </div>
-        <div>
-          <BrainMapWithText
-            brainAreas={otherUsersBrainAreas}
-            brainData={otherUsersBrainData}
-            fontSizeAdjusts={fontSizeAdjusts}
-            textRotations={textRotations}
-          />
+        <div className="brain-map">
+          <div className="brain-map-content">
+            <BrainMapWithText
+              brainAreas={otherUsersBrainAreas}
+              brainData={otherUsersBrainData}
+              fontSizeAdjusts={fontSizeAdjusts}
+              textRotations={textRotations}
+            />
+          </div>
           <h3 className="brain-map-subtitle">비슷한 사용자들의 두뇌 탐험</h3>
         </div>
       </div>

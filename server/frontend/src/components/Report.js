@@ -48,30 +48,23 @@ function Report({ userName = "새싹" }) {
   const [humanText, setHumanText] = useState('');
   const [aiText, setAiText] = useState('');
 
-  // 관심 주제(API)
-  const userBrainAreas = [
-    { id: 1, x: 35, y: 21 },  
-    { id: 2, x: 21, y: 135 },  
-    { id: 3, x: 5, y: 22 },  
-    { id: 4, x: 19, y: 22 },  
-    { id: 5, x: 39, y: 95 },      
-    { id: 6, x: 475, y: 36 },  
-    { id: 7, x: 36, y: 34 },  
+  // 관심 주제(API) 
+  const brainAreas = [
+    { id: 1, x: 30, y: 18 }, 
+    { id: 2, x: 55, y: 12 }, 
+    { id: 3, x: 25, y: 30 },  
+    { id: 4, x: 46, y: 30 }, 
+    { id: 5, x: 72, y: 33 }, 
+    { id: 6, x: 48, y: 45 }, 
+    { id: 7, x: 67, y: 50 }, 
   ];
-
-  const otherUsersBrainAreas = [
-    { id: 1, x: 350, y: 210 },  
-    { id: 2, x: 210, y: 135 },  
-    { id: 3, x: 500, y: 220 },  
-    { id: 4, x: 190, y: 220 },  
-    { id: 5, x: 390, y: 95 },      
-    { id: 6, x: 475, y: 360 },  
-    { id: 7, x: 360, y: 340 },  
-  ];
+  const brainFonts = ['14px', '12px', '16px', '20px', '15px', '12px', '14px']
+  const userBrainAreas = brainAreas;
+  const otherUsersBrainAreas = brainAreas;
   const [userBrainData, setUserBrainData] = useState([]);
   const [otherUsersBrainData, setOtherUsersBrainData] = useState([]);
 
-  // 발달장애 위험(API)
+  // 발달지연 경고(API)
   const [emergencyData, setEmergencyData] = useState({
     title: "",
     siren: "",
@@ -117,9 +110,9 @@ function Report({ userName = "새싹" }) {
       const response = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            title: "발달장애 위험",
-            siren: "안전", 
-            aiText: "현재 발달 위험이 감지되지 않고 있습니다. 잘하고 계시니 더 많은 사랑을 주세요!"
+            title: "발달지연 경고",
+            siren: "위험", 
+            aiText: "현재 발달 지연 위험이 감지되었습니다. 가까운 병원 방문이나 전문가 상담을 고려해보세요."
           });
         }, 1000);
       });
@@ -193,13 +186,13 @@ function Report({ userName = "새싹" }) {
             otherUsersBrainAreas={otherUsersBrainAreas}
             userBrainData={userBrainData}
             otherUsersBrainData={otherUsersBrainData}
-            fontSizeAdjusts={['14px', '12px', '16px', '13px', '15px', '12px', '14px']}
+            fontSizeAdjusts={brainFonts}
             userName={userName}
           />
         </div>
 
         <div>
-          <Title>발달장애 위험</Title>
+          <Title>발달지연 경고</Title>
           <Emergency
             siren={emergencyData.siren}
             aiText={emergencyData.aiText}
