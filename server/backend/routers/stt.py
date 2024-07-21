@@ -1,14 +1,18 @@
+from fastapi import APIRouter, File, Form, UploadFile, Request, HTTPException
 import io
-from openai import OpenAI
-from fastapi.responses import JSONResponse
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File
-from pathlib import Path
+import openai
 
 router = APIRouter()
 
 
 @router.post("/stt")
-async def transcribe_audio(request: Request, file: UploadFile = File(...)):
+async def transcribe_audio(
+    request: Request,
+    file: UploadFile = File(...),
+    user_id: str = Form(...),
+    request_id: str = Form(...),
+    timestamp: str = Form(...),
+):
     openai_client = request.app.state.openai_client
     if not file.filename:
         raise HTTPException(status_code=400, detail="No selected file")
@@ -38,6 +42,12 @@ async def transcribe_audio(request: Request, file: UploadFile = File(...)):
         )
         model_answer = response.choices[0].message.content
 
-        return {"transcription": transcription, "model_answer": model_answer}
+        return {
+            "user_id": user_id,
+            "request_id": request_id,
+            "timestamp": timestamp,
+            "transcription": transcription,
+            "model_answer": model_answer,
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

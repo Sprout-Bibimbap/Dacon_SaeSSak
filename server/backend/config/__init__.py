@@ -36,9 +36,13 @@ class DatabaseSettings(BaseSettings):
     class Config:
         env_file = ".env"
 
+class LoginSettings(BaseSettings):
+    jwt_secret_key: str
+    
+    class Config:
+        env_file = ".env"
 
-
-class Settings(CommonSettings, ServerSettings, DatabaseSettings):
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, LoginSettings):
     pass
 
 
