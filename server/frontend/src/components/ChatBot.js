@@ -1,16 +1,19 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import AudioVisualizer from './AudioVisualizer';
 import RecordingIndicator from './RecordingIndicator';
 import ErrorMessage from './ErrorMessage';
 import { useOpenAITTS } from '../hooks/tts.js';
 import { useAudioRecorder } from '../hooks/useAudioRecorder.js';
+import { useUser } from '../UserContext';
 import '../App.css';
 import './ChatBot.css';
 
 const STT_URL = process.env.REACT_APP_STT_URL || 'http://localhost:8000/api/v1/response/stt';
 
 function ChatBot({ onLogout }) {
+  const { user } = useUser();
   const [transcript, setTranscript] = useState('');
   const [modelAnswer, setModelAnswer] = useState('');
   const [error, setError] = useState(null);
@@ -31,6 +34,9 @@ function ChatBot({ onLogout }) {
   const sendAudioToServer = useCallback(async (audioBlob) => {
     const formData = new FormData();
     formData.append('file', audioBlob, 'recording.webm');
+    formData.append('user_id', user.username);
+    formData.append('request_id', uuidv4());
+    formData.append('timestamp', new Date().toISOString());
 
     try {
       const response = await fetch(STT_URL, {
@@ -50,7 +56,7 @@ function ChatBot({ onLogout }) {
     } catch (err) {
       setError('Error sending audio to server: ' + err.message);
     }
-  }, [getTTS]);
+  }, [user, getTTS, setError, setTranscript, setModelAnswer]);
 
   const handleStartRecording = useCallback(async () => {
     try {
