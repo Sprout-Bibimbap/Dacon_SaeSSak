@@ -12,7 +12,7 @@ function MainPage({ onLogout }) {
         <div className="space-y-4">
           <Link to="/chat" className="block w-64 px-4 py-2 bg-green-500 text-white text-center rounded">Chat</Link>
           <Link to="/report" className="block w-64 px-4 py-2 bg-green-500 text-white text-center rounded">Report</Link>
-          <button className="w-64 px-4 py-2 bg-green-500 text-white rounded">Button 3</button>
+          <button className="w-64 px-4 py-2 bg-green-500 text-white rounded">TextLog</button>
         </div>
       </main>
     </div>

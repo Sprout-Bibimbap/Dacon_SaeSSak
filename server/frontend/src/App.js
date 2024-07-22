@@ -40,22 +40,33 @@ function AppContent() {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      const userData = response.data;
+      const userData = response.username;
       
-      // 필요한 필드가 있는지 확인
-      if (!userData.username) {
-        throw new Error('Invalid user data received');
+      if (userData && typeof userData.username === 'object') {
+        setUser(userData);
+        console.log('User data successfully fetched and set');
+      } else {
+        console.error('Invalid user data structure received');
+        alert('Received user data is in an unexpected format. Please try again.');
       }
-      
-      setUser(userData);
     } catch (error) {
       console.error('Error fetching user info:', error);
-      if (error.response && error.response.status === 401) {
-        // 인증 에러인 경우에만 로그아웃
-        handleLogout();
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            console.log('Authentication error. Logging out.');
+            handleLogout();
+            break;
+          case 404:
+            alert('User information not found. Please try logging in again.');
+            break;
+          default:
+            alert(`Failed to fetch user information (Status ${error.response.status}). Please try again.`);
+        }
+      } else if (error.request) {
+        alert('No response received from the server. Please check your connection and try again.');
       } else {
-        // 다른 종류의 에러는 사용자에게 알림
-        alert('Failed to fetch user information. Please try again.');
+        alert('An unexpected error occurred. Please try again.');
       }
     }
   };

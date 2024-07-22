@@ -128,5 +128,4 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
 async def read_users_me(
     request: Request, current_user: User = Depends(get_current_user)
 ):
-    db = request.app.state.user_info
     return current_user
