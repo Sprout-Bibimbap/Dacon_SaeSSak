@@ -1,14 +1,12 @@
 from fastapi import HTTPException, Depends, APIRouter, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
-from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
-import os
 from config import settings
 from config.schemas import *
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -124,8 +122,19 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
     return user
 
 
+def convert_objectid(data):
+    if isinstance(data, list):
+        return [convert_objectid(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: convert_objectid(value) for key, value in data.items()}
+    elif isinstance(data, ObjectId):
+        return str(data)
+    else:
+        return data
+
+
 @router.get("/me")
 async def read_users_me(
     request: Request, current_user: User = Depends(get_current_user)
 ):
-    return current_user
+    return convert_objectid(current_user)

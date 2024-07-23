@@ -36,18 +36,32 @@ function AppContent() {
 
   const fetchUserInfo = async (token) => {
     try {
+      console.log('Fetching user info with token:', token);
       const response = await axios.get(USERINFO_URL, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      const userData = response.username;
+      console.log('Raw response:', response);
+      const userData = response.data;
       
-      if (userData && typeof userData.username === 'object') {
-        setUser(userData);
-        console.log('User data successfully fetched and set');
+      const processedUserData = {
+        id: userData._id,
+        username: userData.username,
+        name: userData.name,
+        age: userData.age,
+        gender: userData.gender
+      };
+      
+      console.log('Processed user data:', processedUserData);
+      
+      if (processedUserData && processedUserData.username) {
+        setUser(processedUserData);
+        console.log('User data successfully set in context:', processedUserData);
+        return true;
       } else {
-        console.error('Invalid user data structure received');
+        console.error('Invalid user data structure:', processedUserData);
         alert('Received user data is in an unexpected format. Please try again.');
+        return false;
       }
     } catch (error) {
       console.error('Error fetching user info:', error);
@@ -68,26 +82,35 @@ function AppContent() {
       } else {
         alert('An unexpected error occurred. Please try again.');
       }
+      return false;
     }
   };
+  
   const handleLogin = async (username, password) => {
     try {
       const formData = new FormData();
       formData.append('username', username);
       formData.append('password', password);
-
+  
       const response = await axios.post(LOGIN_URL, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
-
+  
       const { access_token } = response.data;
       setToken(access_token);
       setIsLoggedIn(true);
       localStorage.setItem('token', access_token);
-
-      await fetchUserInfo(access_token);
+  
+      const userInfoFetched = await fetchUserInfo(access_token);
+      
+      if (userInfoFetched) {
+        console.log('Login successful, user info set');
+      } else {
+        console.error('Login successful but user info not set');
+        alert('Login successful but failed to fetch user information. Please try again.');
+      }
     } catch (error) {
       console.error('Login error:', error.response?.data?.detail || error.message);
       alert(error.response?.data?.detail || 'An error occurred during login');
@@ -103,8 +126,6 @@ function AppContent() {
       alert(error.response?.data?.detail || 'An error occurred during signup');
     }
   };
-
-
 
   const handleLogout = () => {
     setIsLoggedIn(false);

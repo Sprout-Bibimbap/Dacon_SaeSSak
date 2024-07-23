@@ -1,64 +1,94 @@
+/* General styles */
 .chatbot-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  nav {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  .nav-link, .logout-button {
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .chat-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  
-  .visualizer-container {
-    width: 200px;
-    height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .initial-circle {
-    width: 200px;
-    height: 200px;
-    background-color: #ccc;
-    border-radius: 50%;
-  }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 10px 0;
-  }
-  
-  h2 {
-    align-self: flex-start;
-    margin-top: 20px;
-  }
-  
-  p {
-    align-self: flex-start;
-    margin: 10px 0;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Navigation styles */
+.chatbot-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #ffffff;
+}
+
+.back-button,
+.nav-link {
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover,
+.nav-link:hover {
+  background-color: #d0d0d0;
+}
+/* Chat area styles */
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.visualizer-container {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.initial-circle {
+  width: 200px;
+  height: 200px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
+
+/* Button styles */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px 0;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Text styles */
+h2 {
+  align-self: flex-start;
+  margin-top: 20px;
+}
+
+p {
+  align-self: flex-start;
+  margin: 10px 0;
+}
+
+/* Recording state */
+.chat-area.recording .visualizer-container {
+  /* Add any specific styles for the recording state */
+}

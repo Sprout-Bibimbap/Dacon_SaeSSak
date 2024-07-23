@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import AudioVisualizer from './AudioVisualizer';
 import RecordingIndicator from './RecordingIndicator';
@@ -13,6 +13,7 @@ import './ChatBot.css';
 const STT_URL = process.env.REACT_APP_STT_URL || 'http://localhost:8000/api/v1/response/stt';
 
 function ChatBot({ onLogout }) {
+  const navigate = useNavigate();
   const { user } = useUser();
   const [transcript, setTranscript] = useState('');
   const [modelAnswer, setModelAnswer] = useState('');
@@ -88,11 +89,15 @@ function ChatBot({ onLogout }) {
     <AudioVisualizer isRecording={isRecording} audioData={audioData} />
   ), [isRecording, audioData]);
 
+  const handleBackToMain = () => {
+    navigate('/'); 
+  };
+
   return (
     <div className="chatbot-container">
-      <nav>
+      <nav className="chatbot-nav">
+        <button onClick={handleBackToMain} className="back-button">Back</button>
         <Link to="/report" className="nav-link">View Report</Link>
-        <button onClick={onLogout} className="logout-button">Logout</button>
       </nav>
       <div className={`chat-area ${isRecording ? 'recording' : ''}`}>
         <div className="visualizer-container">

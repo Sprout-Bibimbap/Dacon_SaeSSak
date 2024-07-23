@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Title from './graphs/Title'; 
+import { Link, useNavigate } from 'react-router-dom';
+import Title from './graphs/Title';
 import BrainMap from './graphs/BrainMap';
 import GraphComponent from './graphs/GraphComponent';
 import HorizontalLineGraph from './graphs/HorizontalLineGraph';
@@ -10,6 +10,7 @@ import "../index.css";
 import "./Report.css";
 
 function Report({ userName = "새싹" }) {
+  const navigate = useNavigate();
   // 말하기 성장표(API)
   const graphData = [
     { name: '23.10.08', value: 1.6 },
@@ -124,8 +125,17 @@ function Report({ userName = "새싹" }) {
     fetchEmergencyData();
   }, []);
 
+  const handleBackToMain = () => {
+    navigate('/'); 
+  };
+
   return (
     <div className="report-container max-w-4xl mx-auto p-4">
+      <nav className="report-nav">
+        <button onClick={handleBackToMain} className="back-button">Back</button>
+        <Link to="/chat" className="nav-link">Back to Chat</Link>
+      </nav>
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
           {year}년 {month}월 {day}일 {userName}이의 성장 보고서
@@ -144,9 +154,7 @@ function Report({ userName = "새싹" }) {
         </div>
       </div>
 
-      <nav className="flex justify-between items-center mb-6">
-        <Link to="/chat" className="nav-link text-blue-500 hover:text-blue-700">Back to Chat</Link>
-      </nav>
+
       
       <div className="space-y-8">
         <div>
