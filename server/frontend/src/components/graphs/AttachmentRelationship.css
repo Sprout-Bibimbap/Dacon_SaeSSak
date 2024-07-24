@@ -1,0 +1,83 @@
+.attachment-relationship-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(to bottom right, #f6f9fc, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.attachment-bubble {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.attachment-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.attachment-text {
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 15px;
+  max-width: calc(100% - 100px); /* 아이콘 크기와 여백을 고려한 최대 너비 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.human-bubble {
+  justify-content: flex-start;
+}
+
+.human-bubble .attachment-icon {
+  margin-right: 10px;
+}
+
+.ai-bubble {
+  justify-content: flex-end;
+}
+
+.ai-bubble .attachment-icon {
+  margin-left: 10px;
+}
+
+.ai-bubble .attachment-text {
+  background-color: #e6f3ff;
+}
+
+.attachment-relationship-text {
+  margin: 0;
+  word-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.attachment-bubble:hover .attachment-text {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .attachment-relationship-container {
+    padding: 10px;
+  }
+  
+  .attachment-text {
+    max-width: calc(100% - 60px); 
+  }
+  
+  .attachment-relationship-text {
+    font-size: 0.9rem;
+  }
+}
