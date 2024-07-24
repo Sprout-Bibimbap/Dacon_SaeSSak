@@ -20,7 +20,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # JWT 설정
 SECRET_KEY = settings.jwt_secret_key
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 360
 
 # OAuth2 설정
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
