@@ -14,7 +14,7 @@ class MongoDBClient:
         """싱글톤 구조 구현"""
         if cls._instance is None:
             cls._instance = await cls._create_instance()
-            await cls.ensure_connection(cls._instance)
+            # await cls.ensure_connection(cls._instance)
         return cls._instance
 
     @classmethod
@@ -23,11 +23,12 @@ class MongoDBClient:
         try:
             client = AsyncIOMotorClient(
                 settings.MONGO_URL,
-                serverSelectionTimeoutMS=5,
+                serverSelectionTimeoutMS=5000,
                 maxPoolSize=20,
+                minPoolSize=5,
                 retryWrites=True,
+                connectTimeoutMS=10000,
             )
-
             return client
 
         except Exception as e:
@@ -46,7 +47,7 @@ class MongoDBClient:
                 await client.admin.command("ping")
                 print("Successfully connected to MongoDB")
                 return
-            except ConnectionFailure:
+            except ConnectionFailure as e:
                 if attempt < max_retries - 1:
                     print(
                         f"Connection attempt {attempt + 1} failed. Retrying in {retry_delay} seconds..."
@@ -54,4 +55,12 @@ class MongoDBClient:
                     await asyncio.sleep(retry_delay)
                     retry_delay *= 2  # Exponential backoff
                 else:
-                    raise
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=f"Could not connect to MongoDB after {max_retries} attempts: {str(e)}",
+                    )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"An unexpected error occurred during connection: {str(e)}",
+                )
